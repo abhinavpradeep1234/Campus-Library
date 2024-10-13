@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="container mt-4 ms-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb fs-4">
+                <li class="breadcrumb-item">
+                    <a href="{% url 'home' %}" class="text-decoration-none text-black"><i class="bi bi-house-door-fill"></i></a>
+                </li>
+                <li class="breadcrumb-item active" aria-label="page">Admin Dashboard</li>
+            </ol>
+        </nav>
+        <div class="container mt-4 ms-4">
+            <div class="row">
+                <div class="col-md-6">
+                    <!-- Adjust column size as needed -->
+                    <div class="card border-success mb-3">
+                        <div class="card-header text-center">Total Users</div>
+                        <div class="card-body text-black">
+                            <p class="card-text text-center">Total Users Logged in the website</p>
+                            <h5 class="card-title text-center">Normal Users : {{ users }} ,Role Users : {{ admin_count }}</h5>
+                            <div class="text-center">
+                                <a href="{% url 'view_user' %}" class="btn btn-warning btn-sm">View Users</a>
+                                <a href="{% url 'add_user' %}" class="btn btn-primary btn-sm">Add User</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mx-auto">
+                    <div class="card border-success mb-3">
+                        <div class="card-header text-center">Total Booking</div>
+                        <div class="card-body text-black">
+                            <p class="card-text text-center">Total Users Booked in the website</p>
+                            <h5 class="card-title text-center">{{ booked }}</h5>
+                            <div class="text-center">
+                                <a href="{% url 'view_booking' %}" class="btn btn-warning btn-sm">View Booking</a>
+                                <a href="{% url 'add_booking' %}" class="btn btn-primary btn-sm">Add Booking</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mx-auto">
+                    <div class="card border-success mb-3">
+                        <div class="card-header text-center">Booking Details</div>
+                        <div class="card-body text-black">
+                            <p class="card-text text-center">Users having fine and book where hold</p>
+                            <h5 class="card-title text-center">With Fine : {{ fine }} | Returned :{{ returned }} | Hold :{{ hold }}</h5>
+                            <div class="text-center">
+                                <a href="{% url 'fine' %}" class="btn btn-warning btn-sm w-30">view User Having Fine</a>
+                                <a href="{% url 'return_status' %}" class="btn btn-warning btn-sm">view Returned user</a>
+                                <a href="{% url 'on_hold' %}" class="btn btn-warning btn-sm">view On Hold user</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <!-- Adjust column size as needed -->
+                    <div class="card border-success mb-3">
+                        <div class="card-header text-center">Total Books</div>
+                        <div class="card-body text-black">
+                            <p class="card-text text-center">Total Books Added to the Library</p>
+                            <h5 class="card-title text-center">{{ Books }}</h5>
+                            <div class="text-center">
+                                <a href="{% url 'library' %}" class="btn btn-warning btn-sm">View Library</a>
+                                <a href="{% url 'add_library' %}" class="btn btn-primary btn-sm">Add Books</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library Management: {{ page_title }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.0/font/bootstrap-icons.css">
+    <style>
+      /* Style for the side menu */
+      .sidenav {
+        height: 100%;
+        width: 0;
+        position: fixed;
+        z-index: 1;
+        top: 0;
+        left: 0;
+        background-color: #111;
+        overflow-x: hidden;
+        transition: 0.5s;
+        padding-top: 60px;
+      }
+
+      .sidenav a {
+        padding: 8px 8px 8px 32px;
+        text-decoration: none;
+        font-size: 25px;
+        color: #818181;
+        display: block;
+        transition: 0.3s;
+      }
+
+      .sidenav a:hover {
+        color: #f1f1f1;
+      }
+
+      .sidenav .closebtn {
+        position: absolute;
+        top: 0;
+        right: 35px;
+        font-size: 36px;
+        margin-left: 50px;
+      }
+
+      #main {
+        transition: margin-left .5s;
+      }
+
+      /* Notification button styles */
+      #notification-bell {
+        background-color: white; /* Initial white background */
+        border: none; /* Remove border */
+        transition: background-color 0.3s;
+         /* Smooth transition for hover effect */
+      }
+
+      #notification-bell:hover {
+        background-color: white; /* Green background on hover */
+      }
+
+      #notification-bell i {
+        color: white; /* Bell icon color */
+      }
+
+      #notification-bell:hover i {
+        color: black; /* Bell icon color on hover */
+      }
+    </style>
+  </head>
+  {% load static %}
+  <body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-dark py-4">
+      <div class="container-fluid">
+        <button class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarNav">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <span class="btn btn-outline-success" onclick="openNav()">☰</span>
+
+        {% comment %} <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;700&display=swap" rel="stylesheet">
+<span class="navbar-brand ms-4" style="font-family: 'Quicksand', sans-serif; font-size: 1.5rem; font-weight: normal; color: white;">{{ page_title }} / Library Management</span>
+
+      
+
+        <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap" rel="stylesheet">
+        <span class="navbar-brand ms-4" style="font-family: 'Raleway', sans-serif; font-size: 1.5rem; font-weight: normal; color: white;">{{ page_title }} / Library Management</span>  {% endcomment %}
+
+       <span  class="navbar-brand text-white h1 ms-4 ">{{ page_title }} / Library Management</span> 
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <div class="me-auto" >
+            <a href="{% url 'notification'%}">
+            <button type="button" class="btn btn-outline-light rounded-circle position-relative" id="notification-bell">
+              <i class="bi bi-bell-fill fs-5 text-dark"></i>
+              <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                {{ unread_count|default:"0" }}  
+                <span class="visually-hidden">unread messages</span>
+              </button>
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </nav>
+    
+    <!-- Side navigation -->
+    <div id="mySidenav" class="sidenav">
+      <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+      <h5 class="text-center text-white ">Library Management System</h5>
+      <br>
+      <img src="{{user.image.url}}"
+           class="rounded-circle d-block mx-auto"
+           style="width: 80px; height:80px"
+           alt="...">
+      <h6 class="text-center text-white">{{ user }}</h6>
+      {% if request.user.role == "ADMIN" %}<h6 class="text-center text-white">{{ user.role }}{{ notify }}</h6>{% endif %}
+      <br>
+      <div class="container mb-4 d-block mx-auto">
+        <a href="{% url "home" %}"><i class="bi bi-house-door-fill"></i><span class="d-none d-md-inline ms-1 fs-4 ms-2">  Home</span></a>
+        <a href="{% url "dashboard" %}"><i class="bi bi-layout-text-window-reverse"></i><span class="d-none d-md-inline ms-1 fs-4 ms-2">  Dashboard</span></a>
+        <a href="{% url "library" %}"><i class="bi bi-collection-fill"></i><span class="d-none d-md-inline ms-1 fs-4 ms-2">  Library</span></a>
+        <a href="{% url 'notification' %}"><i class="bi bi-bell-fill"></i><span class="d-none d-md-inline ms-1 fs-4 ms-2">  Notification</span></a>
+        <a href="{% url 'profile' %}"><i class="bi bi-person-circle"></i><span class="d-none d-md-inline ms-1 fs-4 ms-2">  Profile</span></a>
+        <a href="{% url 'logout' %}"><i class="bi bi-power"></i><span class="d-none d-md-inline ms-1 fs-4 ms-2">  Logout</span></a>
+      </div>
+    </div>
+
+    <!-- Main content -->
+    <div class="container mt-4 mb-3">
+      {% if messages %}
+        {% for message in messages %}
+          <div {% if message.extra_tags %}class="text-center alert {{ message.tags }}"{% endif %}
+               role="alert">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    </div>
+
+    <!-- Bootstrap JS and custom JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      function openNav() {
+        document.getElementById("mySidenav").style.width = "320px";
+        document.getElementById("main").style.marginLeft = "300px";
+      }
+
+      function closeNav() {
+        document.getElementById("mySidenav").style.width = "0";
+        document.getElementById("main").style.marginLeft= "0";
+      }
+    </script>
+
+    {% block content %}
+    {% endblock content %}
+  </body>
+</html>

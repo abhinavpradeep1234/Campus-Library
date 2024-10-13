@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% block content %}
+  <div class="container">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb fs-4">
+        <li class="breadcrumb-item">
+          <a href="{% url 'home' %}"><i class="bi bi-house-door-fill text-decoration-none text-black"> </i></a>
+        </li>
+        <li class="breadcrumb-item active" aria-label="page">Users Dashboard</li>
+      </ol>
+    </nav>
+  </div>
+  {% if all_bookings %}
+    <div class="container">
+      <table class="table table-striped table-hover table-bordered table-sm border-black">
+        <thead>
+          <tr class="text-center">
+            <th scope="col">Username</th>
+            <th scope="col">Book Name</th>
+            <th scope="col">Date Booked</th>
+            <th scope="col">Due Date</th>
+            <th scope="col">Fine</th>
+            <th scope="col">Email</th>
+            <th scope="col">Status</th>
+          </tr>
+        </thead>
+        <tbody class="table-group divider">
+          {% for all_booking in all_bookings %}
+            <tr class="text-center">
+              <td>{{ all_booking.username }}</td>
+              <td>{{ all_booking.book_name }}</td>
+              <td>{{ all_booking.date_issue }}</td>
+              <td>{{ all_booking.due_date }}</td>
+              <td>₹ {{ all_booking.fine }}</td>
+              <td>{{ all_booking.email }}</td>
+              <td>
+                <!-- Button trigger modal -->
+                <button type="button"
+                        class="btn btn-outline-primary btn-sm"
+                        data-bs-toggle="modal"
+                        data-bs-target="#exampleModal{{ all_booking.id }}">{{ all_booking.status }}</button>
+                <!-- Modal -->
+                <div class="modal fade"
+                     id="exampleModal{{ all_booking.id }}"
+                     tabindex="-1"
+                     aria-labelledby="exampleModalLabel{{ all_booking.id }}"
+                     aria-hidden="true">
+                  <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel{{ all_booking.id }}">Update</h1>
+                        <button type="button"
+                                class="btn-close"
+                                data-bs-dismiss="modal"
+                                aria-label="Close"></button>
+                      </div>
+                      <form action="{% url 'update_booking' all_booking.id %}" method="post">
+                        {% csrf_token %}
+                        <div class="modal-body">{{ form.as_p }}</div>
+                        <div class="modal-footer">
+                          <button type="submit" class="btn btn-success">Update</button>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {% comment %} <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios1" value="option1" checked>
+                                    <label class="form-check-label" for="exampleRadios1">on hold</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios2" value="option2">
+                                    <label class="form-check-label" for="exampleRadios2">Returned</label>
+                </div></td> {% endcomment %}
+                {% comment %} </div>{{ all_booking.status }}</td> {% endcomment %}
+              </tr>
+            </tbody>
+          {% endfor %}
+        {% else %}
+          <div class="alert alert-success text-center" role="alert">No Book Booked At the Moment!!</div>
+        </table>
+      {% endif %}
+      <!-- Button trigger modal -->
+ <!-- Modal -->
+        <div class="modal fade"
+             id="exampleModal"
+             tabindex="-1"
+             aria-labelledby="exampleModalLabel"
+             aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+              <h1 class="modal-title fs-5" id="exampleModalLabel"></h1>
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          ...
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary">Save changes</button>
+        </div>
+      </div>
+    </div>
+</div> 
+ {% comment %} <button type="button" class="btn btn-success position-relative">
+  <i class="bi bi-bell-fill"></i>
+  <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+    {{ unread_count|default:"0" }}  
+      <!-- Use the dynamic count -->
+      <span class="visually-hidden">unread messages</span>
+  </span>
+</button>  {% endcomment %}
+
+{% endblock content %}

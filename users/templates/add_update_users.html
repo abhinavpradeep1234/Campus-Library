@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="container mt-4 ms-2">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb fs-4">
+                <li class="breadcrumb-item">
+                    <a href="{% url 'home' %}" class="text-decoration-none text-black"><i class="bi bi-house-door-fill"></i></a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="{% url 'dashboard_admin' %}"
+                       class="text-decoration-none text-black">Admin Dashboard</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">{{ page_title }}</li>
+            </ol>
+        </nav>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 mx-auto">
+                <div class="card">
+                    <div class="card-body">
+                        <form method="post">
+                            {% csrf_token %}
+                            {{ form.non_field_errors }}
+                            {{ form.as_p }}
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-primary btn-sm">{{ page_title }}</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="container mt-4 ms-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb fs-4">
+                <li class="breadcrumb-item">
+                    <a href="{% url 'home' %}">
+                        <i class="bi bi-house-door-fill text-decoration-none text-black"></i>
+                    </a>
+                </li>
+                <li class="breadcrumb-item active" aria-label-current="page">{{ page_title }}</li>
+            </ol>
+        </nav>
+    </div>
+
+    <div class="container mt-4">
+        {% if all_notifications %}
+            {% for all_notification in all_notifications %}
+                <!-- Conditional alert color based on is_mark -->
+                <div class="alert {% if not all_notification.is_mark %} alert-primary {% else %} alert-dark {% endif %}" role="alert">
+                    {{ all_notification.username }} : {{ all_notification.notification }} - {{ all_notification.time }}
+
+                    {% if not all_notification.is_mark %}
+                        <a href="{% url 'mark_as_read' all_notification.id %}" class="alert-link">
+                            <button type="button" class="btn btn-outline-secondary">Mark as Read</button>
+                        </a>
+                        {% else %}
+                            <button type="button" class="btn btn-outline-secondary"> Read</button>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="alert alert-dark" role="alert">Currently No New Notification Yet!!</div>
+        {% endif %}
+    </div>
+{% endblock content %}
