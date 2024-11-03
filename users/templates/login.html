@@ -21,27 +21,10 @@
                         </div>
                         {% csrf_token %}
                         <h5 class="text-center">Login</h5>
-                        {{form.as_p}}
-                        {% comment %} <div class="mb-3">
-                            <label for="text" class="form-label">Username</label>
-                            <input type="text"
-                                   class="form-control"
-                                   name="username"
-                                   id="exampleFormControlInput1"
-                                   placeholder="Username..">
-                        </div>
-                        <div class="mb-3">
-                            <label for="password" class="form-label">Password</label>
-                            <input type="password"
-                                   class="form-control"
-                                   name="password"
-                                   id="exampleFormControlInput1"
-                                   placeholder="Password..">
-                        </div> {% endcomment %}
+                        {{ form.as_p }}
                         <div class="d-grid gap-2 col-6 mx-auto">
                             <button class="btn btn-primary" type="submit">Login</button>
-                          </div>
-                          
+                        </div>
                     </form>
                 </div>
             </div>

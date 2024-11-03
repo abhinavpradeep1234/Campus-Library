@@ -1,5 +1,5 @@
 from django import forms
-from .models import Library, Booking
+from .models import Library, Booking, Complaints
 
 
 class LibraryForm(forms.ModelForm):
@@ -57,3 +57,9 @@ class UpdateStatusForm(forms.ModelForm):
         widgets = {
             "status": forms.Select(attrs={"class": "form-control"}),
         }
+
+
+class ComplaintForm(forms.ModelForm):
+    class Meta:
+        model = Complaints
+        fields = ["report_issue", "book_name"]

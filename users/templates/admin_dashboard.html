@@ -1,15 +1,22 @@
 {% extends "base.html" %}
 {% block content %}
-    <div class="container mt-4 ms-4">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb fs-4">
-                <li class="breadcrumb-item">
-                    <a href="{% url 'home' %}" class="text-decoration-none text-black"><i class="bi bi-house-door-fill"></i></a>
-                </li>
-                <li class="breadcrumb-item active" aria-label="page">Admin Dashboard</li>
-            </ol>
-        </nav>
+    {% if request.user.role == "ADMIN" %}
         <div class="container mt-4 ms-4">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb fs-4">
+                    <li class="breadcrumb-item">
+                        <a href="{% url 'home' %}" class="text-decoration-none text-black"><i class="bi bi-house-door-fill"></i></a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-label="page">Admin Dashboard</li>
+                </ol>
+            </nav>
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end ms-4">
+                <a href="{% url 'fine' %}" class="btn btn-outline-primary btn-sm w-30">Having Fine</a>
+                <a href="{% url 'return_status' %}" class="btn btn-outline-primary btn-sm">Returned user</a>
+                <a href="{% url 'on_hold' %}" class="btn btn-outline-primary btn-sm">Hold user</a>
+                
+              </div>
+            {% comment %} <div class="container mt-4 ms-4">
             <div class="row">
                 <div class="col-md-6">
                     <!-- Adjust column size as needed -->
@@ -69,4 +76,170 @@
             </div>
         </div>
     </div>
-{% endblock content %}
+
+
+            {% endcomment %}
+            <div class="container ms-4 mt-2">
+                <div class="row  g-3">
+                    <div class="col-md-3">
+                        <div class="card text-bg-success">
+                            <div class="card-body">
+                                <h5 class="card-title">Total Users</h5>
+                                <p class="card-text">
+                                    <i class="bi bi-people-fill fs-3 me-1"></i>
+                                    All Users Logged in the website
+                                </p>
+                                <a href="{% url 'view_user' %}" class="text-decoration-none text-white">View >>>></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-bg-danger">
+                            <div class="card-body">
+                                <h6 class="card-title">All Complaints</h6>
+                                <p class="card-text">
+                                    <i class="bi bi-people-fill fs-3 me-1"></i>
+                                    Check Registerd Complaints
+                                </p>
+                                <a href="{% url 'all_complaints'%}" class="text-decoration-none text-white">View >>>></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-bg-secondary">
+                            <div class="card-body">
+                                <h5 class="card-title">Total Bookings</h5>
+                                <p class="card-text">
+                                    <i class="bi bi-check-circle fs-3"></i>
+                                    Total Booked Users
+                                </p>
+                                <a href="{% url 'view_booking' %}"
+                                   class="text-decoration-none text-white">View >>>></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-bg-dark">
+                            <div class="card-body">
+                                <h5 class="card-title">Total Books</h5>
+                                <p class="card-text">
+                                    <i class="bi bi-book fs-3"></i>
+                                    Books Added to the Library
+                                </p>
+                                <a href="{% url 'library' %}" class="text-decoration-none text-white">View >>>></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+{% comment %} 
+
+                <div class="col-md-3 mt-3 me-3">
+                    <div class="card text-bg-light">
+                        <div class="card-body">
+                            <h6 class="card-title">Filter Booking</h6>
+                            <p class="card-text">
+                                <div class="btn-group" role="group" aria-label="Basic outlined example">
+                                    <a href="{% url 'fine' %}" class="btn btn-outline-primary btn-sm w-30">Having Fine</a>
+                                    <a href="{% url 'return_status' %}" class="btn btn-outline-primary btn-sm">Returned user</a>
+                                    <a href="{% url 'on_hold' %}" class="btn btn-outline-primary btn-sm">Hold user</a>
+                                   
+                            </p> {% endcomment %}
+                            {% comment %} <a href="" class="text-decoration-none text-white">View Fine>>>></a>
+                            <a href="" class="text-decoration-none text-white">View  Returned>>>></a>
+                            <a href="" class="text-decoration-none text-white">View  Book Hold>>>></a> {% endcomment %}
+                        {% comment %} </div>
+                    </div>
+                </div> {% endcomment %}
+    
+            </div>
+            <!DOCTYPE html>
+            <html lang="en">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <!-- Include Chart.js Library -->
+                    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                </head>
+                <body>
+                    <div class="d-flex justify-content-center me-4 ms-4 mt-0 ">
+                        <!-- Canvas Element for Chart -->
+                        <canvas id="myChart" width="850" height="289"></canvas>
+                    </div>
+                    <script>
+        // Initialize chart with default label
+        let myChart;
+        window.onload = function() {
+            const ctx = document.getElementById('myChart').getContext('2d');
+
+            // Define custom subheadings for each bar
+            const subheadings = [
+                'Total number of books in the library',
+                'Total number of registered users',
+                'Total bookings made',
+                'Books currently on hold',
+                'Books that have been returned',
+                'Users who have been fined',
+                'Registerd complaints'
+            ];
+
+            myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Total Books', 'Total Users', 'Total Booking', 'Books on Hold', 'Books Returned', 'Fined Users','complaints','Admin Rights'],
+                    datasets: [{
+                        label: 'Overview of Library',
+                        data: [{{Books}}, {{users}}, {{booked}}, {{hold}}, {{returned}}, {{fine}},{{complaints_count}},{{admin_count}}],
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 1.5)',
+                            'rgba(54, 162, 235, 1.5)',
+                            'rgba(255, 206, 86, 1.5)',
+                            'rgba(75, 192, 192, 1.5)',
+                            'rgba(153, 102, 255, 1.5)',
+                            'rgba(255, 159, 64, 1.5)',
+                            'rgba(244, 164, 96, 1.5)',
+
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(255, 159, 64, 1)',
+                            'rgba(244, 164, 96, 1.5)',
+                            'rgba(244, 164, 96, 1.5)',
+
+                        ],
+                        borderWidth: 3,
+                        maxBarThickness: 122 // Controls the maximum thickness of bars
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    responsive: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    // Use the subheadings array for custom tooltip labels
+                                    const index = context.dataIndex;
+                                    const value = context.raw;
+                                    return `${subheadings[index]}: ${value}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        };
+                    </script>
+                </body>
+            </html>
+        {% endif %}
+    {% endblock content %}

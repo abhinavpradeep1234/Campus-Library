@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-  <div class="container mt-4">
+  <div class="container mt-4 ms-2">
     <nav aria-label="breadcrumb ">
       <ol class="breadcrumb fs-4">
         <li class="breadcrumb-item">
@@ -10,88 +10,118 @@
       </ol>
     </nav>
   </div>
-  <div class="container mt-4">
+  <div class="container ms-4 ">
+    <div class="container ms-4 ">
+      <div class="container-fluid">
+        <div class="d-flex align-items-center">
+          <form class="d-flex" role="search" method="get">
+            <select class="form-select w-50 ms-4"
+                    aria-label="Filter by"
+                    name="search_filter">
+              <option value="languages">Languages</option>
+              <option value="category">Category</option>
+              <option value="book">Book Name</option>
+            </select>
+            <input class="form-control me-2 w-50"
+                   type="search"
+                   name="search"
+                   placeholder="Search"
+                   aria-label="Search">
+            <button class="btn btn-outline-success ms-2" type="submit">Search</button>
+            <button class="btn btn-outline-danger ms-2" type="reset">Clear</button>
+          </form>
+          {% if request.user.role == "ADMIN"%}
+          <a href="{% url 'add_library' %}">
+            <button class="btn btn-outline-primary ms-2" type="submit">Add Book</button>
+          </a>
+
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+  {% if  all_books %}
     <div class="container mt-4">
-      <div class="row">
-        {% for all_book in all_books %}
-          <div class="col-md-3">
-            <!-- Adjust the column size as needed -->
-            <div class="card mb-4">
-              <!-- Margin for spacing -->
-              <div class="d-flex justify-content-center align-items-center mt-4">
-                <!-- Center image container -->
-                <img src="{{ all_book.image.url }}"
-                     class="card-img-top"
-                     alt="{{ all_book.book_name }}"
-                     style="width: 100px;
-                            height: 120px;
-                            object-fit: cover">
-              </div>
-              <div class="card-body">
-                <h5 class="card-title text-center">{{ all_book.book_name }}</h5>
-                <p class="card-text text-center">{{ all_book.book_author }}</p>
-                <p class="card-text text-center">{{ all_book.languages }}</p>
-                <p class="card-text text-center">{{ all_book.category }}</p>
-                <p class="card-text text-center">{{ all_book.book_id }}</p>
-                {% if user.role != "ADMIN" %}
-                  <div class="d-grid gap-2 col-6 mx-auto">
-                    <a class="btn btn-primary btn-sm"
-                       href="{% url 'add_booking'  %}"
-                       role="button"> <i class="bi bi-check2"></i>Book Now</a>
-                  </div>
-                {% endif %}
-                {% comment %} <div class="d-grid gap-2 mx-auto"> {% endcomment %}
-
-                {% if user.role == "ADMIN" %}
-                <div class="d-flex justify-content-center">
-
-                <div class="btn-group" role="group" aria-label="Basic example">
-
-                  <button type="button"
-                          class="btn btn-danger btn-sm"
-                          data-bs-toggle="modal"
-                          data-bs-target="#deleteModal{{ all_book.id }}">
-                    <i class="bi bi-trash"></i> Delete
-                  </button>
-                  <a class="btn btn-success btn-sm"
-                     href="{% url 'update_library' all_book.id %}"
-                     role="button"><i class="bi bi-arrow-counterclockwise"></i>Update</a>
+      <div class="container mt-4">
+        <div class="row">
+          {% for all_book in all_books %}
+            <div class="col-md-3">
+              <!-- Adjust the column size as needed -->
+              <div class="card mb-4">
+                <!-- Margin for spacing -->
+                <div class="d-flex justify-content-center align-items-center mt-4">
+                  <!-- Center image container -->
+                  <img src="{{ all_book.image.url }}"
+                       class="card-img-top"
+                       alt="{{ all_book.book_name }}"
+                       style="width: 100px;
+                              height: 120px;
+                              object-fit: cover">
                 </div>
-              </div>
-                 
-                {% endif %}
-                <!-- Modal -->
-                <div class="modal fade"
-                     id="deleteModal{{ all_book.id }}"
-                     tabindex="-1"
-                     aria-labelledby="deleteModal{{ all_book.id }}"
-                     aria-hidden="true">
-                  <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
-                      <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="deleteModal{{ all_book.id }}">Delete</h1>
+                <div class="card-body">
+                  <h5 class="card-title text-center">{{ all_book.book_name }}</h5>
+                  <p class="card-text text-center">{{ all_book.book_author }}</p>
+                  <p class="card-text text-center">{{ all_book.languages }}</p>
+                  <p class="card-text text-center">{{ all_book.category }}</p>
+                  <p class="card-text text-center">{{ all_book.book_id }}</p>
+                  {% if user.role != "ADMIN" %}
+                    <div class="d-grid gap-2 col-6 mx-auto">
+                      <a class="btn btn-primary btn-sm"
+                         href="{% url 'add_booking' all_book.id %}"
+                         role="button"> <i class="bi bi-check2"></i>Book Now</a>
+                    </div>
+                  {% endif %}
+                  {% comment %} <div class="d-grid gap-2 mx-auto"> {% endcomment %}
+                  {% if user.role == "ADMIN" %}
+                    <div class="d-flex justify-content-center">
+                      <div class="btn-group" role="group" aria-label="Basic example">
                         <button type="button"
-                                class="btn-close"
-                                data-bs-dismiss="modal"
-                                aria-label="Close"></button>
+                                class="btn btn-danger btn-sm"
+                                data-bs-toggle="modal"
+                                data-bs-target="#deleteModal{{ all_book.id }}">
+                          <i class="bi bi-trash"></i> Delete
+                        </button>
+                        <a class="btn btn-success btn-sm"
+                           href="{% url 'update_library' all_book.id %}"
+                           role="button"><i class="bi bi-arrow-counterclockwise"></i>Update</a>
                       </div>
-                      <div class="modal-body">Are you sure you want to Delete</div>
-                      <div class="modal-footer">
-                        <a class="btn btn-danger btn-sm"
-                           href="{% url 'delete_library' all_book.id %}"
-                           role="button">Confirm Delete</a>
+                    </div>
+                  {% endif %}
+                  <!-- Modal -->
+                  <div class="modal fade"
+                       id="deleteModal{{ all_book.id }}"
+                       tabindex="-1"
+                       aria-labelledby="deleteModal{{ all_book.id }}"
+                       aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h1 class="modal-title fs-5" id="deleteModal{{ all_book.id }}">Delete</h1>
+                          <button type="button"
+                                  class="btn-close"
+                                  data-bs-dismiss="modal"
+                                  aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">Are you sure you want to Delete</div>
+                        <div class="modal-footer">
+                          <a class="btn btn-danger btn-sm"
+                             href="{% url 'delete_library' all_book.id %}"
+                             role="button">Confirm Delete</a>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-        {% endfor %}
+          {% endfor %}
+          {% include 'pagination.html' %}
+        {% else %}
+          {% comment %} <div class="alert alert-success text-center" role="alert">Currently No Books Added to Library</div> {% endcomment %}
+        </div>
       </div>
     </div>
-  </div>
-  <style>
+    <style>
 .card{
 width:310px;
 height:390px;
@@ -100,7 +130,6 @@ height:390px;
 width:100px;
 height:120px;
 }
-  </style>
- 
-  
+    </style>
+  {% endif %}
 {% endblock content %}

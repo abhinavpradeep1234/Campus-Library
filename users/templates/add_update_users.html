@@ -6,10 +6,12 @@
                 <li class="breadcrumb-item">
                     <a href="{% url 'home' %}" class="text-decoration-none text-black"><i class="bi bi-house-door-fill"></i></a>
                 </li>
-                <li class="breadcrumb-item">
-                    <a href="{% url 'dashboard_admin' %}"
-                       class="text-decoration-none text-black">Admin Dashboard</a>
-                </li>
+                {% if request.user.role == "ADMIN" %}
+                    <li class="breadcrumb-item">
+                        <a href="{% url 'dashboard_admin' %}"
+                           class="text-decoration-none text-black">Admin Dashboard</a>
+                    </li>
+                {% endif %}
                 <li class="breadcrumb-item active" aria-current="page">{{ page_title }}</li>
             </ol>
         </nav>

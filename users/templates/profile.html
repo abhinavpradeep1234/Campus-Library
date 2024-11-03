@@ -10,74 +10,70 @@
             </ol>
         </nav>
     </div>
-    <div class="container">
-        <div class="row">
-            <div class="col-md-6 mx-auto">
-                <div class="card border-black">
-                    <div class="card-body">
-                        <div class="mb-3 ">
-                            <img src="{{ user.image.url }}"
-                                 class="rounded-circle d-block mx-auto"
-                                 style="width: 180px;
-                                        height:130px"
-                                 alt="...">
-                        </div>
-                        <h5 class="card-title text-center mb-4">User Profile</h5>
-                        <div class="mb-3">
-                            <label class="form-label fw-bold text-me-4 ">Username</label>
-                            <p class="border-bottom pb-2 border-black">{{ user.username }}</p>
-                        </div>
-                        <div class="mb-3 ">
-                            <label class="form-label fw-bold">First Name</label>
-                            <p class="border-bottom pb-2 border-black">{{ user.first_name }}</p>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Last Name</label>
-                            <p class="border-bottom pb-2 border-black">{{ user.last_name }}</p>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Last Login</label>
-                            <p class="border-bottom pb-2 border-black">{{ user.last_login }}</p>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Date Join</label>
-                            <p class="border-bottom pb-2 border-black">{{ user.date_joined }}</p>
-                        </div>
-                        <div class="d-grid gap-2 col-6 mx-auto">
-                            <button type="button"
-                                    class="btn btn-primary btn-sm"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#exampleModal">Update</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
     <!-- Modal -->
-    <div class="modal fade"
-         id="exampleModal"
-         tabindex="-1"
-         aria-labelledby="exampleModalLabel"
-         aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">Update Profile</h1>
-                    <button type="button"
-                            class="btn-close"
-                            data-bs-dismiss="modal"
-                            aria-label="Close"></button>
-                </div>
-                <form action="{% url 'profile_update' user.id %}"
-                      method="post"
-                      enctype="multipart/form-data">
-                    {% csrf_token %}
-                    <div class="modal-body">{{ form.as_p }}</div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-success btn-sm">Update Profile</button>
+    <div class="container mt-2">
+        <div class="border-4 rounded-4 shadow-lg m-2 p-2">
+            <div class="text-center m-3">
+                <h5>Profile Details</h5>
+            </div>
+            <div class="row">
+                <div class="col-3 text-center">
+                    <div class="mx-auto border-primary">
+                        <img src="{{ user.image.url }}"
+                             class="rounded-circle d-block mx-auto"
+                             style="width: 130px; height: 130px;"
+                             alt="Profile Image">
+                        <p class="fw-bold mt-2 mb-0">{{ current_user.username }}</p>
+                        <p class="fw-bold mt-2">{{ current_user.role.name|capfirst }}</p>
                     </div>
-                </form>
+                </div>
+                <div class="col-9">
+                    <div class="card m-2">
+                        <div class="card-body">
+                            <table class="table">
+                                <tbody>
+                                    <tr>
+                                        <td class="w-25">Username:</td>
+                                        <td>{{ user.username }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Email:</td>
+                                        <td>{{ user.email }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Date Joined:</td>
+                                        <td>{{ user.date_joined }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Phone Number:</td>
+                                        <td>{{ user.phone_number }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>First Name:</td>
+                                        <td>{{ user.first_name }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Last Name:</td>
+                                        <td>{{ user.last_name }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Address:</td>
+                                        <td>{{ user.address }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Last Login:</td>
+                                        <td>{{ user.last_login }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div class="text-end">
+                                <a href="{% url 'profile_update' user.id %}">
+                                    <button type="button" class="btn btn-success">Edit Profile</button>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

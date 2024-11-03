@@ -6,6 +6,7 @@ from users.models import CustomUser
 from django.core.exceptions import ValidationError
 from users.utils import create_notification
 
+
 # Create your models here.
 class Library(models.Model):
     book_name = models.CharField(max_length=200)
@@ -14,10 +15,7 @@ class Library(models.Model):
     image = models.ImageField(upload_to="new_library", null=True)
     category = models.CharField(max_length=200)
     book_id = models.CharField(max_length=20, unique=True, null=True)
-    is_available=models.BooleanField(default=True)
-
-
-
+    is_available = models.BooleanField(default=True)
 
     def __str__(self):
         return f"{self.book_name} - {self.book_id}"
@@ -35,18 +33,22 @@ class Booking(models.Model):
     due_date = models.DateTimeField(editable=False)
     fine = models.PositiveIntegerField(default=0, editable=False)
     status = models.CharField(max_length=50, choices=STATUS, default="on hold")
+    returned_date=models.DateTimeField(auto_now=True,editable=False,null=True)
 
-    
     def save(self, *args, **kwargs):
         # Set due_date if it's not already set
         if not self.due_date:
             if not self.date_issue:
                 self.date_issue = timezone.now()
-            self.due_date = self.date_issue + timedelta(minutes=1)  # Short duration for testing
+            self.due_date = self.date_issue + timedelta(
+                minutes=1
+            )  # Short duration for testing
 
         # Calculate the fine if the due date is past
         if self.due_date < timezone.now():
-            minutes_overdue = (timezone.now() - self.due_date).seconds // 60  # Calculate in minutes
+            minutes_overdue = (
+                timezone.now() - self.due_date
+            ).seconds // 60  # Calculate in minutes
             self.fine = minutes_overdue * 10  # Fine of Rs. 10 per minute
 
             # Send a notification if a fine is generated
@@ -55,11 +57,21 @@ class Booking(models.Model):
                 create_notification(self.username, notification_message)
         else:
             self.fine = 0
+        if self.status == "returned" and self.returned_date is None:
+            self.returned_date = timezone.now()
+        elif self.status != "returned":
+            # Reset returned_date if status changes away from 'returned'
+            self.returned_date = None
+
 
         super(Booking, self).save(*args, **kwargs)
 
 
-  
+class Complaints(models.Model):
+    username = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    book_name = models.ForeignKey(Library, on_delete=models.CASCADE)
+    date = models.DateTimeField(auto_now=True, editable=False)
+    report_issue = models.CharField(max_length=200)
 
     # def save(self, *args, **kwargs):
     #     # Set due_date to 7 days from now if it is not set
@@ -87,11 +99,6 @@ class Booking(models.Model):
 
     #     super(Booking, self).save(*args, **kwargs)
 
-
-
-
-
-
     # def save(self, *args, **kwargs):
 
     #     if not self.due_date:
@@ -111,10 +118,8 @@ class Booking(models.Model):
     #         self.fine = days_overdue * 10  # Fine of Rs. 10 per minute
     #     else:
     #         self.fine = 0
-        
 
     #     print(f"Calculated Fine: {self.fine}")
-        
 
     #     # Check if the book is already booked by someone else and is not returned
 

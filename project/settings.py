@@ -132,3 +132,5 @@ AUTH_USER_MODEL = "users.CustomUser"
 
 MEDIA_ROOT_BASEDIR="upload"
 MEDIA_URL='/media/'
+
+login_url="signup"

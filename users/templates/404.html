@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">  <!-- Center the row -->
+        <div class="col-md-6">  <!-- Remove mx-auto class -->
+            <div class="card">
+                <div class="card-body">
+                    <div style="display: flex; justify-content: center;">
+                        <img src="{% static 'image/450.png' %}" alt="403 Error Image" class="alert-image" width="200" height="150">
+                    </div>
+                    <p>
+                        403 Forbidden error occurs when the server understands the request but refuses to authorize it. This usually happens due to permission settings or access restrictions. You have no right to access the page. Contact Administration.
+                    </p>
+                    <div class="text-center">
+                        <a href="{% url 'home' %}">
+                            <button type="submit" class="btn btn-outline-primary btn-sm">Back to Home</button>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

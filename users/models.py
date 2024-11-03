@@ -16,3 +16,4 @@ class Notification(models.Model):
     notification = models.TextField()
     time = models.DateTimeField(auto_now=True)
     is_mark = models.BooleanField(default=False)
+    

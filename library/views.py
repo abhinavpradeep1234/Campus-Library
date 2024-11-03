@@ -1,163 +1,200 @@
 from django.shortcuts import render, redirect
-from .models import Library, Booking
+from library.models import Library, Booking, Complaints
 from django.shortcuts import get_object_or_404
 from django.contrib import messages
-from .forms import LibraryForm, BookingForm, UpdateStatusForm
+from library.forms import LibraryForm, BookingForm, UpdateStatusForm, ComplaintForm
 from users.utils import create_notification
 from users.models import Notification, CustomUser
+from django.contrib.auth.mixins import LoginRequiredMixin
+
+from django.views.generic import ListView
+from django.contrib.auth.decorators import login_required
 
 
-# Create your views here.
-def library(request):
-    unread_count = Notification.objects.filter(
-        is_mark=False, username=request.user
-    ).count()
-
-    context = {
+class LibraryListView(LoginRequiredMixin, ListView):
+    model = Library
+    template_name = "view_library.html"
+    extra_context = {
         "page_title": "View Library",
-        "all_books": Library.objects.all(),
-        "unread_count": unread_count,
     }
-    return render(request, "view_library.html", context)
+    context_object_name = "all_books"
+    paginate_by = 4
+    ordering = ["id"]
 
+    def get_queryset(self):
+        search = self.request.GET.get("search")
 
-def add_library(request):
-    unread_count = Notification.objects.filter(
-        is_mark=False, username=request.user
-    ).count()
+        filter_type = self.request.GET.get("search_filter")
+        queryset = super().get_queryset()
 
-    if request.method == "POST":
-        form = LibraryForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-            messages.success(
-                request,
-                "Book Added To Library Successfully ",
-                extra_tags="alert-success",
-            )
-            all_users = CustomUser.objects.filter(is_active=True)
-            for user in all_users:
-                create_notification(
-                    user, "New Book Added To Library  Please check it out"
+        if search:
+            if filter_type == "book":
+                queryset = queryset.filter(book_name__icontains=search)
+            elif filter_type == "languages":
+                queryset = queryset.filter(languages__icontains=search)
+            elif filter_type == "category":
+                queryset = queryset.filter(category__icontains=search)
+
+            if not queryset.exists():
+                messages.error(
+                    self.request,
+                    "Sorry Your Entered Data is Not Found",
+                    extra_tags="alert-danger",
                 )
-            return redirect("library")
 
-        else:
-            for error_list in form.errors.values():
-                for errors in error_list:
-                    messages.success(request, errors, extra_tags="alert-danger")
-    context = {
-        "page_title": "Add Book",
-        "form": LibraryForm(),
-        "unread_count": unread_count,
-    }
-
-    return render(request, "add_update_libarary.html", context)
+        return queryset
 
 
+@login_required(login_url="signup")
+def add_library(request):
+    if request.user.role == "ADMIN":
+        unread_count = Notification.objects.filter(
+            is_mark=False, username=request.user
+        ).count()
+
+        if request.method == "POST":
+            form = LibraryForm(request.POST, request.FILES)
+            if form.is_valid():
+                form.save()
+                messages.success(
+                    request,
+                    "Book Added To Library Successfully ",
+                    extra_tags="alert-success",
+                )
+                all_users = CustomUser.objects.filter(is_active=True)
+                for user in all_users:
+                    create_notification(
+                        user, "New Book Added To Library  Please check it out"
+                    )
+                return redirect("library")
+
+            else:
+                for error_list in form.errors.values():
+                    for errors in error_list:
+                        messages.success(request, errors, extra_tags="alert-danger")
+        context = {
+            "page_title": "Add Book",
+            "form": LibraryForm(),
+            "unread_count": unread_count,
+        }
+
+        return render(request, "add_update_libarary.html", context)
+    return redirect("404")
+
+
+@login_required(login_url="signup")
 def update_library(request, pk):
-    unread_count = Notification.objects.filter(
-        is_mark=False, username=request.user
-    ).count()
+    if request.user.role == "ADMIN":
+        unread_count = Notification.objects.filter(
+            is_mark=False, username=request.user
+        ).count()
 
-    to_update = get_object_or_404(
-        Library,
-        id=pk,
-    )
-    if request.method == "POST":
-        form = LibraryForm(request.POST, request.FILES, instance=to_update)
-        if form.is_valid():
-            form.save()
-            messages.success(
-                request,
-                "Book Updated To Library  ",
-                extra_tags="alert-success",
-            )
-            return redirect("library")
+        to_update = get_object_or_404(
+            Library,
+            id=pk,
+        )
+        if request.method == "POST":
+            form = LibraryForm(request.POST, request.FILES, instance=to_update)
+            if form.is_valid():
+                form.save()
+                messages.success(
+                    request,
+                    "Book Updated To Library  ",
+                    extra_tags="alert-success",
+                )
+                return redirect("library")
 
-        else:
-            for error_list in form.errors.values():
-                for errors in error_list:
-                    messages.success(request, errors, extra_tags="alert-danger")
-    context = {
-        "page_title": "Update Book",
-        "form": LibraryForm(instance=to_update),
-        "unread_count": unread_count,
-    }
+            else:
+                for error_list in form.errors.values():
+                    for errors in error_list:
+                        messages.success(request, errors, extra_tags="alert-danger")
+        context = {
+            "page_title": "Update Book",
+            "form": LibraryForm(instance=to_update),
+            "unread_count": unread_count,
+        }
 
-    return render(request, "add_update_libarary.html", context)
+        return render(request, "add_update_libarary.html", context)
+    return redirect("404")
 
 
+@login_required(login_url="signup")
 def delete_library(request, pk):
-    to_delete = get_object_or_404(Library, id=pk)
-    to_delete.delete()
-    messages.success(request, "Deleted Successfully", extra_tags="alert-success")
-    return redirect("library")
+    if request.user.role == "ADMIN":
+
+        to_delete = get_object_or_404(Library, id=pk)
+        to_delete.delete()
+        messages.success(request, "Deleted Successfully", extra_tags="alert-success")
+        return redirect("library")
+
+    return redirect("404")
 
 
-def view_booking(request):
+class BookingListView(LoginRequiredMixin, ListView):
+    model = Booking
+    template_name = "view_booking.html"
+    context_object_name = "all_bookings"
+    paginate_by = 8
+    ordering = ["id"]
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.role != "ADMIN":
+            return redirect("404")
+
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["page_title"] = "All Bookings"
+        context["form"] = (UpdateStatusForm,)
+        context["unread_count"] = Notification.objects.filter(
+            is_mark=False, username=self.request.user
+        ).count()
+        return context
+
+    def get_queryset(self):
+        bookings = Booking.objects.all()
+
+        for booking in bookings:
+            booking.save()
+        return super().get_queryset()
+
+
+@login_required(login_url="signup")
+def add_booking(request, pk):
+    all_book = get_object_or_404(Library, id=pk)
     unread_count = Notification.objects.filter(
         is_mark=False, username=request.user
     ).count()
-    bookings = Booking.objects.all()
-    for booking in bookings:
-        booking.save()
-    context = {
-        "page_title": "All Booking",
-        "all_bookings": Booking.objects.all(),
-        "form": UpdateStatusForm,
-        "unread_count": unread_count,
-    }
-    return render(request, "view_booking.html", context)
-
-
-def add_booking(request):
-    unread_count = Notification.objects.filter(
-        is_mark=False, username=request.user
-    ).count()
+    available_booking = Library.objects.filter(is_available=True)
+    if not available_booking:
+        messages.error(
+            request,
+            "Currently No Books Are Available .",
+            extra_tags="alert-danger",
+        )
 
     if request.method == "POST":
         form = BookingForm(request.POST)
         if form.is_valid():
-            book = form.cleaned_data["book_name"]
-
-            # Fetch the book object using the selected book
-            # book = Library.objects.get(id=selected_booking.id)  # Ensure you're getting the right book
-
-            if not book.is_available:
-                messages.error(
-                    request,
-                    "The book is already booked by another user, so it's unavailable.",
-                    extra_tags="alert-danger",
-                )
-                context = {
-                    "page_title": "Book Now",
-                    "form": BookingForm(),
-                    "unread_count": unread_count,
-                }
-                return render(request, "add_booking.html", context)
-
-            # Check if the user already has an active booking
             if Booking.objects.filter(username=request.user).exists():
                 messages.error(
                     request,
                     "You already have an active booking. You can't book more than one book.",
                     extra_tags="alert-danger",
                 )
-                context={"page_title": "Book Now",
-                    "form": BookingForm(),
-                    "unread_count": unread_count,}
+                context = {
+                    "page_title": "Book Now",
+                    "form": form,
+                    "unread_count": unread_count,
+                }
                 return render(request, "add_booking.html", context)
-
-            # Proceed with the booking if all checks pass
+            book = form.cleaned_data["book_name"]
             booking = form.save(commit=False)
             booking.username = request.user
-            booking.save()  # Save the booking first
-
-            # Mark the selected book as unavailable after saving the booking
+            booking.save()
             book.is_available = False
             book.save()
-
             messages.success(
                 request,
                 "Your booking is successful! Check your dashboard, and you can collect the book from the library.",
@@ -174,19 +211,23 @@ def add_booking(request):
             return redirect("dashboard")
 
         else:
-            # Handle form errors
             for error_list in form.errors.values():
                 for errors in error_list:
                     messages.error(request, errors, extra_tags="alert-danger")
 
+    initial_data = {"book_name": all_book}
+    form = BookingForm(initial_data)
+
     context = {
         "page_title": "Book Now",
-        "form": BookingForm(),
+        "form": form,
         "unread_count": unread_count,
+        "all_book": all_book,
     }
     return render(request, "add_booking.html", context)
 
 
+@login_required(login_url="signup")
 def update_booking(request, pk):
     unread_count = Notification.objects.filter(
         is_mark=False, username=request.user
@@ -212,72 +253,207 @@ def update_booking(request, pk):
     return render(request, "dashboard_user.html", context)
 
 
+@login_required(login_url="signup")
 def delete_booking(request, pk):
-    to_delete = get_object_or_404(Booking, id=pk)
+    if request.user.role == "ADMIN":
+        to_delete = get_object_or_404(Booking, id=pk)
+        book_to_update = to_delete.book_name
 
-    # Capture the user before deleting the booking
-    user_to_notify = (
-        to_delete.username
-    )  # Assuming 'username' is the user field in the Booking model
+        # Capture the user before deleting the booking
+        user_to_notify = (
+            to_delete.username
+        )  # Assuming 'username' is the user field in the Booking model
 
-    to_delete.delete()
+        to_delete.delete()
+        book_to_update.is_available = True
+        book_to_update.save()
 
-    messages.success(request, "Removed as Returned ", extra_tags="alert-success")
+        messages.success(request, "Mark as Returned ", extra_tags="alert-success")
 
-    # Send notification to the user whose booking was deleted
-    if request.user.is_authenticated:
-        create_notification(user_to_notify, "Your Returned the Book Thank You...")
-
-    return redirect("dashboard")
-
-
-def return_status(request):
-    unread_count = Notification.objects.filter(
-        is_mark=False, username=request.user
-    ).count()
-    bookings = Booking.objects.all()
-    for booking in bookings:
-        booking.save()
-    context = {
-        "all_bookings": Booking.objects.filter(status="returned").all(),
-        "page_title": "Returned User",
-        "form": UpdateStatusForm,
-        "unread_count": unread_count,
-    }
-    return render(request, "status_filter.html", context)
-
-
-def fine(request):
-    unread_count = Notification.objects.filter(
-        is_mark=False, username=request.user
-    ).count()
-    bookings = Booking.objects.all()
-    for booking in bookings:
-        booking.save()
+        # Send notification to the user whose booking was deleted
         if request.user.is_authenticated:
-            create_notification(request.user, "fine..")
+            create_notification(user_to_notify, "Your Returned the Book Thank You...")
+
+        return redirect("dashboard")
+    return redirect("404")
+
+
+class ReturnStatusListView(LoginRequiredMixin, ListView):
+    model = Booking
+    template_name = "status_filter.html"
+    paginate_by = 8
+    ordering = ["id"]
+
+    # context_object_name = "all_bookings"
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.role != "ADMIN":
+            return redirect("404")
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["page_title"] = "Returned Users"
+        context["form"] = UpdateStatusForm
+        context["all_bookings"] = Booking.objects.filter(status="returned").all()
+
+        context["unread_count"] = Notification.objects.filter(
+            is_mark=False, username=self.request.user
+        ).count()
+        return context
+
+    def get_queryset(self):
+        bookings = Booking.objects.all()
+        for booking in bookings:
+            booking.save()
+        return super().get_queryset()
+
+
+class FineListView(LoginRequiredMixin, ListView):
+    model = Booking
+    template_name = "fine_filter.html"
+    paginate_by = 8
+    ordering = ["id"]
+
+    # context_object_name = "all_bookings"
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.role != "ADMIN":
+            return redirect("404")
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["page_title"] = "Fined Users"
+        context["form"] = UpdateStatusForm
+        context["all_bookings"] = Booking.objects.filter(fine__gt=0).all()
+        context["unread_count"] = Notification.objects.filter(
+            is_mark=False, username=self.request.user
+        ).count()
+        return context
+
+    def get_queryset(self):
+        bookings = Booking.objects.all()
+        for booking in bookings:
+            booking.save()
+        return super().get_queryset()
+
+
+class OnHoldStatusListView(LoginRequiredMixin, ListView):
+    model = Booking
+    template_name = "status_on_hold_filter.html"
+    paginate_by = 8
+    ordering = ["id"]
+
+    # context_object_name = "all_bookings"
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.role != "ADMIN":
+            return redirect("404")
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["page_title"] = "Book Hold Users"
+        context["form"] = UpdateStatusForm
+        context["all_bookings"] = Booking.objects.filter(status="on hold").all()
+        context["unread_count"] = Notification.objects.filter(
+            is_mark=False, username=self.request.user
+        ).count()
+        return context
+
+    def get_queryset(self):
+        bookings = Booking.objects.all()
+        for booking in bookings:
+            booking.save()
+        return super().get_queryset()
+
+
+class ComplaintsListView(LoginRequiredMixin, ListView):
+    model = Complaints
+    template_name = "view_complaints.html"
+    context_object_name = "all_bookings"
+    paginate_by = 8
+    ordering = ["id"]
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["page_title"] = "View Complaints"
+        context["all_bookings"] = Complaints.objects.filter(username=self.request.user)
+        return context
+
+
+@login_required(login_url="signup")
+def add_complaints(request):
+    if request.method == "POST":
+        form = ComplaintForm(request.POST)
+        if form.is_valid():
+            complaints = form.save(commit=False)
+            complaints.username = request.user
+            complaints.save()
+            messages.success(
+                request, "Complaint Registered Successfully", extra_tags="alert-success"
+            )
+
+            return redirect("view_complaints")
+        else:
+            for error_list in form.errors.values():
+                for errors in error_list:
+                    messages.success(request, errors, extra_tags="alert-danger")
+    context = {
+        "page_title": "Register Complaint",
+        "form": ComplaintForm,
+        "complaint": True,
+    }
+    return render(request, "add_booking.html", context)
+
+
+class AllComplaintsListView(LoginRequiredMixin, ListView):
+    model = Complaints
+    template_name = "view_complaints.html"
+    context_object_name = "all_bookings"
+    paginate_by = 8
+    ordering = ["id"]
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.role != "ADMIN":
+            return redirect("404")
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["page_title"] = "View Complaints"
+        context["all_bookings"] = Complaints.objects.all()
+        return context
+
+
+@login_required(login_url="signup")
+def update_complaints(request, pk):
+    to_update = get_object_or_404(Complaints, id=pk)
+    if request.method == "POST":
+        form = ComplaintForm(request.POST, instance=to_update)
+        if form.is_valid():
+            complaints = form.save(commit=False)
+            complaints.username = request.user
+            messages.success(
+                request, "Complaint Updated Successfully", extra_tags="alert-success"
+            )
+            complaints.save()
+
+            return redirect("view_complaints")
+
+        else:
+            for error_list in form.errors.values():
+                for errors in error_list:
+                    messages.success(request, errors, extra_tags="alert-danger")
 
     context = {
-        "all_bookings": Booking.objects.filter(fine__gt=0).all(),
-        "page_title": "Fine",
-        "unread_count": unread_count,
-        "form": UpdateStatusForm,
+        "page_title": "Edit  Complaint",
+        "form": ComplaintForm(instance=to_update),
     }
-    return render(request, "fine_filter.html", context)
+    return render(request, "add_booking.html", context)
 
 
-def on_hold(request):
-    unread_count = Notification.objects.filter(
-        is_mark=False, username=request.user
-    ).count()
-    bookings = Booking.objects.all()
-    for booking in bookings:
-        booking.save()
-    all_bookings = Booking.objects.filter(status="on hold").all()
-    context = {
-        "page_title": "Hold Users",
-        "all_bookings": all_bookings,
-        "form": UpdateStatusForm,
-        "unread_count": unread_count,
-    }
-    return render(request, "status_on_hold_filter.html", context)
+@login_required(login_url="signup")
+def delete_complaints(request, pk):
+    to_delete = get_object_or_404(Complaints, id=pk)
+    to_delete.delete()
+    messages.success(request, " You Cancel Complaint", extra_tags="alert-danger")
+    return redirect("view_complaints")
