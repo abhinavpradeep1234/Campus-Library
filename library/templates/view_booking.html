@@ -26,7 +26,6 @@
             <th scope="col">Fine</th>
             <th scope="col">Email</th>
             <th scope="col">Status</th>
-            <th scope="col">Actions</th>
           </tr>
         </thead>
         <tbody class="table-group divider">
@@ -44,64 +43,12 @@
                         data-bs-toggle="modal"
                         data-bs-target="#exampleModal{{ all_booking.id }}">{{ all_booking.status }}</button>
               </td>
-              <td>
-                <button type="button"
-                        class="btn btn-outline-success btn-sm"
-                        data-bs-toggle="modal"
-                        data-bs-target="#Modal{{ all_booking.id }}">Mark as Returned</button>
-              </td>
+             
+              
             </tr>
           </tbody>
-          <!-- Button trigger modal -->
-          <!-- Modal -->
-          <div class="modal fade"
-               id="exampleModal{{ all_booking.id }}"
-               tabindex="-1"
-               aria-labelledby="exampleModalLabel{{ all_booking.id }}"
-               aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h1 class="modal-title fs-5" id="exampleModalLabel{{ all_booking.id }}">Update</h1>
-                  <button type="button"
-                          class="btn-close"
-                          data-bs-dismiss="modal"
-                          aria-label="Close"></button>
-                </div>
-                <form action="{% url 'update_booking' all_booking.id %}" method="post">
-                  {% csrf_token %}
-                  <div class="modal-body">{{ form.as_p }}</div>
-                  <div class="modal-footer">
-                    <button type="submit" class="btn btn-success">Update</button>
-                  </form>
-                </div>
-              </div>
-            </div>
-          </div>
-          <!-- Modal -->
-          <div class="modal fade"
-               id="Modal{{ all_booking.id }}"
-               tabindex="-1"
-               aria-labelledby="ModalLabel{{ all_booking.id }}"
-               aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h1 class="modal-title fs-5" id="ModalLabel{{ all_booking.id }}">Removed</h1>
-                  <button type="button"
-                          class="btn-close"
-                          data-bs-dismiss="modal"
-                          aria-label="Close"></button>
-                </div>
-                <div class="modal-body">Are you sure The student Returned The Book</div>
-                <div class="modal-footer">
-                  <a href="{% url 'delete_booking' all_booking.id %}">
-                    <button type="submit" class="btn btn-success">Yes</button>
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
+     
+        
         {% endfor %}
       </table>
       {% include 'pagination.html' %}

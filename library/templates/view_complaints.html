@@ -7,8 +7,8 @@
           <a href="{% url 'home' %}"><i class="bi bi-house-door-fill text-decoration-none text-black"> </i></a>
         </li>
         <li class="breadcrumb-item">
-          <a href="{% url 'dashboard_admin' %}"
-             class="text-decoration-none text-black">Dashboard Admin</a>
+          <a href="{% url 'add_complaints' %}"
+             class="text-decoration-none text-black">Report</a>
         </li>
         <li class="breadcrumb-item active" aria-label="page">{{ page_title }}</li>
       </ol>
@@ -28,6 +28,8 @@
 
            
             <th scope="col">Reported</th>
+            <th scope="col">Respond</th>
+            
             <th colspan=2>Actions</th>
           </tr>
         </thead>
@@ -38,6 +40,7 @@
               <td>{{ all_booking.book_name }}</td>
               <td>{{ all_booking.date }}</td>
               <td>{{ all_booking.report_issue }}</td>
+              <td>{{ all_booking.responds }}</td>
 
               <td>
                 <a href="{% url 'update_complaints' all_booking.id %}">

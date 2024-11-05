@@ -26,7 +26,6 @@
                         <th scope="col">Fine</th>
                         <th scope="col">Email</th>
                         <th scope="col">Status</th>
-                        <th scope="col">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="table-group divider">
@@ -46,15 +45,9 @@
                                     {{ all_booking.status }}
                                 </button>
                             </td>
-                            <td>
-                                <button type="button"
-                                        class="btn btn-outline-success btn-sm"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#Modal{{ all_booking.id }}">Remove as Returned</button>
-                            </td>
                         </tr>
                         <!-- Modal for update booking -->
-                        <div class="modal fade"
+                        {% comment %} <div class="modal fade"
                              id="exampleModal{{ all_booking.id }}"
                              tabindex="-1"
                              aria-labelledby="exampleModalLabel{{ all_booking.id }}"
@@ -77,31 +70,8 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div> {% endcomment %}
                         <!-- Modal for removing booking -->
-                        <div class="modal fade"
-                             id="Modal{{ all_booking.id }}"
-                             tabindex="-1"
-                             aria-labelledby="ModalLabel{{ all_booking.id }}"
-                             aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h1 class="modal-title fs-5" id="ModalLabel{{ all_booking.id }}">Removed</h1>
-                                        <button type="button"
-                                                class="btn-close"
-                                                data-bs-dismiss="modal"
-                                                aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">Are you sure The student Returned The Book</div>
-                                    <div class="modal-footer">
-                                        <a href="{% url 'delete_booking' all_booking.id %}">
-                                            <button type="button" class="btn btn-success">Yes</button>
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                     {% endfor %}
                 </tbody>
             </table>

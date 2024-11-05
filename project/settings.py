@@ -57,7 +57,8 @@ ROOT_URLCONF = "project.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": ["templates"],
+        "DIRS": [BASE_DIR / 'templates'],
+        
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -76,10 +77,22 @@ WSGI_APPLICATION = "project.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.sqlite3",
+#         "NAME": BASE_DIR / "db.sqlite3",
+#     }
+# }
+
+
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "campus_library",
+        "USER": "postgres",
+        "PASSWORD": "1234",
+        "HOST": "localhost",
+        "PORT": "5433",
     }
 }
 
@@ -108,12 +121,11 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = 'Asia/Kolkata'
+TIME_ZONE = "Asia/Kolkata"
 
 USE_I18N = True
 
 USE_TZ = True
-    
 
 
 # Static files (CSS, JavaScript, Images)
@@ -130,7 +142,21 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 AUTH_USER_MODEL = "users.CustomUser"
 
-MEDIA_ROOT_BASEDIR="upload"
-MEDIA_URL='/media/'
+MEDIA_ROOT_BASEDIR = "upload"
+MEDIA_URL = "/media/"
 
-login_url="signup"
+login_url = "signup"
+
+# Email configurations
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+
+EMAIL_HOST = "smtp.gmail.com"
+
+EMAIL_PORT = 587
+
+EMAIL_HOST_USER = "smartpublictoilets@gmail.com"  # Your Email
+
+
+EMAIL_HOST_PASSWORD = "tjph srzt kigj ojyo"  # your App password
+
+EMAIL_USE_TLS = True

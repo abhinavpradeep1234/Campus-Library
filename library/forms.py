@@ -1,5 +1,6 @@
 from django import forms
 from .models import Library, Booking, Complaints
+# Respond
 
 
 class LibraryForm(forms.ModelForm):
@@ -63,3 +64,9 @@ class ComplaintForm(forms.ModelForm):
     class Meta:
         model = Complaints
         fields = ["report_issue", "book_name"]
+
+
+class RespondComplaintForm(forms.ModelForm):
+    class Meta:
+        model = Complaints
+        fields = ["responds"]

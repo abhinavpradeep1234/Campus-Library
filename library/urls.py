@@ -15,13 +15,19 @@ urlpatterns = [
     path("view/status", views.ReturnStatusListView.as_view(), name="return_status"),
     path("view/status/on_hold", views.OnHoldStatusListView.as_view(), name="on_hold"),
     path("view/fine", views.FineListView.as_view(), name="fine"),
-    #for user
+    # for user
     path("view/complaints", views.ComplaintsListView.as_view(), name="view_complaints"),
-    #for admin
-    path("all/complaints", views.AllComplaintsListView.as_view(), name="all_complaints"),
+    # for admin
+    path(
+        "all/complaints", views.AllComplaintsListView.as_view(), name="all_complaints"
+    ),
     path("add/complaints", views.add_complaints, name="add_complaints"),
     path(
         "update/complaints/<int:pk>", views.update_complaints, name="update_complaints"
     ),
-    path("delete/complaints/<int:pk>", views.delete_complaints, name="delete_complaints"),
+    path(
+        "delete/complaints/<int:pk>", views.delete_complaints, name="delete_complaints"
+    ),
+    path("complaints/create/respond/<int:pk>", views.create_respond, name="create_respond"),
+    # path("delete/complaints/<int:pk>", views.delete_respond, name="delete_respond"),
 ]

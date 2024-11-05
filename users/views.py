@@ -317,3 +317,10 @@ def error_404(request):
     context={"page_title":"403"}
     return render(request, "404.html",context)
 
+
+
+def forget_password(request):
+    context={"page_title":"Forget Password"}
+    return render(request, "forget.html",context)
+
+    

@@ -1,8 +1,15 @@
 from django.shortcuts import render, redirect
 from library.models import Library, Booking, Complaints
+# Respond
 from django.shortcuts import get_object_or_404
 from django.contrib import messages
-from library.forms import LibraryForm, BookingForm, UpdateStatusForm, ComplaintForm
+from library.forms import (
+    LibraryForm,
+    BookingForm,
+    UpdateStatusForm,
+    ComplaintForm,
+    RespondComplaintForm,
+)
 from users.utils import create_notification
 from users.models import Notification, CustomUser
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -22,6 +29,11 @@ class LibraryListView(LoginRequiredMixin, ListView):
     ordering = ["id"]
 
     def get_queryset(self):
+        bookings = Booking.objects.all()
+
+        for booking in bookings:
+            booking.save()
+        return super().get_queryset()
         search = self.request.GET.get("search")
 
         filter_type = self.request.GET.get("search_filter")
@@ -41,8 +53,10 @@ class LibraryListView(LoginRequiredMixin, ListView):
                     "Sorry Your Entered Data is Not Found",
                     extra_tags="alert-danger",
                 )
+        
 
         return queryset
+    
 
 
 @login_required(login_url="signup")
@@ -407,7 +421,7 @@ def add_complaints(request):
 
 class AllComplaintsListView(LoginRequiredMixin, ListView):
     model = Complaints
-    template_name = "view_complaints.html"
+    template_name = "all_complaints.html"
     context_object_name = "all_bookings"
     paginate_by = 8
     ordering = ["id"]
@@ -457,3 +471,38 @@ def delete_complaints(request, pk):
     to_delete.delete()
     messages.success(request, " You Cancel Complaint", extra_tags="alert-danger")
     return redirect("view_complaints")
+
+
+@login_required(login_url="signup")
+def create_respond(request,pk):
+    if request.user.role =="ADMIN":
+        to_update=get_object_or_404(Complaints,id=pk)
+        if request.method == "POST":
+            form = RespondComplaintForm(request.POST,instance=to_update)
+            if form.is_valid():
+                form.save()
+                messages.success(
+                    request, "Add  respond to the complaints", extra_tags="alert-success"
+                )
+                return redirect("dashboard_admin")
+            else:
+                for error_list in form.errors.values():
+                    for errors in error_list:
+                        messages.success(request, errors, extra_tags="alert-danger")
+
+        context = {
+            "page_title": "Respond  Complaint",
+            "form": RespondComplaintForm(instance=to_update),
+        }
+        return render(request, "add_update_users.html", context)
+    return redirect("404")
+
+
+# @login_required(login_url="signup")
+# def delete_respond(request, pk):
+#     to_delete = get_object_or_404(Respond, id=pk)
+#     to_delete.delete()
+#     messages.success(
+#         request, "Add A respond to the complaints", extra_tags="alert-success"
+#     )
+#     return redirect("admin_dashboard")

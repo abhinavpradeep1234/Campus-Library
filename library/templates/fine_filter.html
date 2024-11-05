@@ -7,13 +7,13 @@
           <a href="{% url 'home' %}"><i class="bi bi-house-door-fill text-decoration-none text-black"> </i></a>
         </li>
         <li class="breadcrumb-item">
-          <a href="{% url 'dashboard_admin' %}" class="text-decoration-none text-black">Dashboard Admin</a>
+          <a href="{% url 'dashboard_admin' %}"
+             class="text-decoration-none text-black">Dashboard Admin</a>
         </li>
         <li class="breadcrumb-item active" aria-label="page">{{ page_title }}</li>
       </ol>
     </nav>
   </div>
-  
   {% if all_bookings %}
     <div class="container mt-4">
       <table class="table table-striped table-bordered table-hover table-sm">
@@ -26,7 +26,6 @@
             <th scope="col">Fine</th>
             <th scope="col">Email</th>
             <th scope="col">Status</th>
-            <th scope="col">Actions</th>
           </tr>
         </thead>
         <tbody class="table-group-divider">
@@ -39,19 +38,18 @@
               <td>₹ {{ all_booking.fine }}</td>
               <td>{{ all_booking.email }}</td>
               <td>
-                <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#exampleModal{{ all_booking.id }}">{{ all_booking.status }}</button>
-              </td>
-              <td>
-                <button type="button" class="btn btn-outline-success btn-sm" data-bs-toggle="modal" data-bs-target="#Modal{{ all_booking.id }}">Remove as Returned</button>
+                <button type="button"
+                        class="btn btn-outline-primary btn-sm"
+                        data-bs-toggle="modal"
+                        data-bs-target="#exampleModal{{ all_booking.id }}">{{ all_booking.status }}</button>
               </td>
             </tr>
           {% endfor %}
         </tbody>
       </table>
-      {% include 'pagination.html' %}
+      {% include "pagination.html" %}
     </div>
   {% else %}
     <div class="alert alert-success text-center" role="alert">Currently No users Having Fine!!</div>
   {% endif %}
-  
 {% endblock content %}

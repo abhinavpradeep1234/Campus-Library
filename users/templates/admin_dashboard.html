@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
+    {% load static %}
     {% if request.user.role == "ADMIN" %}
         <div class="container mt-4 ms-4">
             <nav aria-label="breadcrumb">
@@ -12,73 +13,10 @@
             </nav>
             <div class="d-grid gap-2 d-md-flex justify-content-md-end ms-4">
                 <a href="{% url 'fine' %}" class="btn btn-outline-primary btn-sm w-30">Having Fine</a>
-                <a href="{% url 'return_status' %}" class="btn btn-outline-primary btn-sm">Returned user</a>
+                <a href="{% url 'return_status' %}"
+                   class="btn btn-outline-primary btn-sm">Returned user</a>
                 <a href="{% url 'on_hold' %}" class="btn btn-outline-primary btn-sm">Hold user</a>
-                
-              </div>
-            {% comment %} <div class="container mt-4 ms-4">
-            <div class="row">
-                <div class="col-md-6">
-                    <!-- Adjust column size as needed -->
-                    <div class="card border-success mb-3">
-                        <div class="card-header text-center">Total Users</div>
-                        <div class="card-body text-black">
-                            <p class="card-text text-center">Total Users Logged in the website</p>
-                            <h5 class="card-title text-center">Normal Users : {{ users }} ,Role Users : {{ admin_count }}</h5>
-                            <div class="text-center">
-                                <a href="{% url 'view_user' %}" class="btn btn-warning btn-sm">View Users</a>
-                                <a href="{% url 'add_user' %}" class="btn btn-primary btn-sm">Add User</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 mx-auto">
-                    <div class="card border-success mb-3">
-                        <div class="card-header text-center">Total Booking</div>
-                        <div class="card-body text-black">
-                            <p class="card-text text-center">Total Users Booked in the website</p>
-                            <h5 class="card-title text-center">{{ booked }}</h5>
-                            <div class="text-center">
-                                <a href="{% url 'view_booking' %}" class="btn btn-warning btn-sm">View Booking</a>
-                                <a href="{% url 'add_booking' %}" class="btn btn-primary btn-sm">Add Booking</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 mx-auto">
-                    <div class="card border-success mb-3">
-                        <div class="card-header text-center">Booking Details</div>
-                        <div class="card-body text-black">
-                            <p class="card-text text-center">Users having fine and book where hold</p>
-                            <h5 class="card-title text-center">With Fine : {{ fine }} | Returned :{{ returned }} | Hold :{{ hold }}</h5>
-                            <div class="text-center">
-                                <a href="{% url 'fine' %}" class="btn btn-warning btn-sm w-30">view User Having Fine</a>
-                                <a href="{% url 'return_status' %}" class="btn btn-warning btn-sm">view Returned user</a>
-                                <a href="{% url 'on_hold' %}" class="btn btn-warning btn-sm">view On Hold user</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <!-- Adjust column size as needed -->
-                    <div class="card border-success mb-3">
-                        <div class="card-header text-center">Total Books</div>
-                        <div class="card-body text-black">
-                            <p class="card-text text-center">Total Books Added to the Library</p>
-                            <h5 class="card-title text-center">{{ Books }}</h5>
-                            <div class="text-center">
-                                <a href="{% url 'library' %}" class="btn btn-warning btn-sm">View Library</a>
-                                <a href="{% url 'add_library' %}" class="btn btn-primary btn-sm">Add Books</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
-        </div>
-    </div>
-
-
-            {% endcomment %}
             <div class="container ms-4 mt-2">
                 <div class="row  g-3">
                     <div class="col-md-3">
@@ -101,7 +39,8 @@
                                     <i class="bi bi-people-fill fs-3 me-1"></i>
                                     Check Registerd Complaints
                                 </p>
-                                <a href="{% url 'all_complaints'%}" class="text-decoration-none text-white">View >>>></a>
+                                <a href="{% url 'all_complaints' %}"
+                                   class="text-decoration-none text-white">View >>>></a>
                             </div>
                         </div>
                     </div>
@@ -131,42 +70,14 @@
                         </div>
                     </div>
                 </div>
-
-{% comment %} 
-
-                <div class="col-md-3 mt-3 me-3">
-                    <div class="card text-bg-light">
-                        <div class="card-body">
-                            <h6 class="card-title">Filter Booking</h6>
-                            <p class="card-text">
-                                <div class="btn-group" role="group" aria-label="Basic outlined example">
-                                    <a href="{% url 'fine' %}" class="btn btn-outline-primary btn-sm w-30">Having Fine</a>
-                                    <a href="{% url 'return_status' %}" class="btn btn-outline-primary btn-sm">Returned user</a>
-                                    <a href="{% url 'on_hold' %}" class="btn btn-outline-primary btn-sm">Hold user</a>
-                                   
-                            </p> {% endcomment %}
-                            {% comment %} <a href="" class="text-decoration-none text-white">View Fine>>>></a>
-                            <a href="" class="text-decoration-none text-white">View  Returned>>>></a>
-                            <a href="" class="text-decoration-none text-white">View  Book Hold>>>></a> {% endcomment %}
-                        {% comment %} </div>
-                    </div>
-                </div> {% endcomment %}
-    
             </div>
-            <!DOCTYPE html>
-            <html lang="en">
-                <head>
-                    <meta charset="UTF-8">
-                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                    <!-- Include Chart.js Library -->
-                    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-                </head>
-                <body>
-                    <div class="d-flex justify-content-center me-4 ms-4 mt-0 ">
-                        <!-- Canvas Element for Chart -->
-                        <canvas id="myChart" width="850" height="289"></canvas>
-                    </div>
-                    <script>
+            <!-- Include Chart.js Library -->
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+            <div class="d-flex justify-content-center me-4 ms-4 mt-0 ">
+                <!-- Canvas Element for Chart -->
+                <canvas id="myChart" width="850" height="289"></canvas>
+            </div>
+            <script>
         // Initialize chart with default label
         let myChart;
         window.onload = function() {
@@ -238,8 +149,7 @@
                 }
             });
         };
-                    </script>
-                </body>
-            </html>
+            </script>
         {% endif %}
-    {% endblock content %}
+    </div>
+{% endblock content %}
