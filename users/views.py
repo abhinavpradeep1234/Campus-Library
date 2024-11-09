@@ -8,13 +8,12 @@ from django.contrib.auth.decorators import login_required
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-# from django.db import IntegrityError
 from library.models import Library
 from django.shortcuts import get_object_or_404
 from library.forms import UpdateStatusForm
 from .forms import RegistrationUserForm
 from library.models import Booking, Complaints
-from users.utils import create_notification
+# from users.utils import create_notification
 
 from django.views.generic import ListView
 
@@ -318,6 +317,3 @@ def error_404(request):
     return render(request, "404.html", context)
 
 
-def forget_password(request):
-    context = {"page_title": "Forget Password"}
-    return render(request, "forget.html", context)
