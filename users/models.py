@@ -7,8 +7,7 @@ from django.contrib.auth.models import AbstractUser
 class CustomUser(AbstractUser):
     ROLE = (("ADMIN", "ADMIN"),)
     role = models.CharField(max_length=20, choices=ROLE, null=True, blank=True)
-    Confirm_password = models.CharField(max_length=15)
-    image = models.ImageField(upload_to="new_library", default="static/image/logo.png")
+    image = models.ImageField(upload_to="new_library", default="static/image/user_default.png")
 
 
 class Notification(models.Model):
@@ -16,4 +15,3 @@ class Notification(models.Model):
     notification = models.TextField()
     time = models.DateTimeField(auto_now=True)
     is_mark = models.BooleanField(default=False)
-    

@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from library.models import Library, Booking, Complaints
+
 # Respond
 from django.shortcuts import get_object_or_404
 from django.contrib import messages
@@ -29,16 +30,19 @@ class LibraryListView(LoginRequiredMixin, ListView):
     ordering = ["id"]
 
     def get_queryset(self):
+        # Perform the loop to save all bookings (if necessary)
         bookings = Booking.objects.all()
-
         for booking in bookings:
-            booking.save()
-        return super().get_queryset()
-        search = self.request.GET.get("search")
+            booking.save()  # Update or process each booking
 
+        # Get the search and filter parameters
+        search = self.request.GET.get("search")
         filter_type = self.request.GET.get("search_filter")
+
+        # Start with the base queryset
         queryset = super().get_queryset()
 
+        # Apply search and filtering logic
         if search:
             if filter_type == "book":
                 queryset = queryset.filter(book_name__icontains=search)
@@ -47,16 +51,54 @@ class LibraryListView(LoginRequiredMixin, ListView):
             elif filter_type == "category":
                 queryset = queryset.filter(category__icontains=search)
 
+            # Handle the case where no results are found
             if not queryset.exists():
                 messages.error(
                     self.request,
                     "Sorry Your Entered Data is Not Found",
                     extra_tags="alert-danger",
                 )
-        
 
         return queryset
-    
+
+
+# class LibraryListView(LoginRequiredMixin, ListView):
+#     model = Library
+#     template_name = "view_library.html"
+#     extra_context = {
+#         "page_title": "View Library",
+#     }
+#     context_object_name = "all_books"
+#     paginate_by = 4
+#     ordering = ["id"]
+
+#     def get_queryset(self):
+#         bookings = Booking.objects.all()
+
+#         for booking in bookings:
+#             booking.save()
+#         return super().get_queryset()
+#         search = self.request.GET.get("search")
+
+#         filter_type = self.request.GET.get("search_filter")
+#         queryset = super().get_queryset()
+
+#         if search:
+#             if filter_type == "book":
+#                 queryset = queryset.filter(book_name__icontains=search)
+#             elif filter_type == "languages":
+#                 queryset = queryset.filter(languages__icontains=search)
+#             elif filter_type == "category":
+#                 queryset = queryset.filter(category__icontains=search)
+
+#             if not queryset.exists():
+#                 messages.error(
+#                     self.request,
+#                     "Sorry Your Entered Data is Not Found",
+#                     extra_tags="alert-danger",
+#                 )
+
+#         return queryset
 
 
 @login_required(login_url="signup")
@@ -254,6 +296,15 @@ def update_booking(request, pk):
             messages.success(
                 request, "Status Updated successfully", extra_tags="alert-success"
             )
+            admin_users = CustomUser.objects.filter(role="ADMIN")
+            for admin_user in admin_users:
+                Notification.objects.create(
+                    username=admin_user,
+                    notification=f"The user {request.user.username} has updated their booking status to 'returned'.",
+                    is_mark=False
+                )
+
+
             return redirect("dashboard")
         else:
             for error_list in form.errors.values():
@@ -357,7 +408,6 @@ class OnHoldStatusListView(LoginRequiredMixin, ListView):
     paginate_by = 8
     ordering = ["id"]
 
-    # context_object_name = "all_bookings"
     def dispatch(self, request, *args, **kwargs):
         if request.user.role != "ADMIN":
             return redirect("404")
@@ -392,6 +442,11 @@ class ComplaintsListView(LoginRequiredMixin, ListView):
         context["page_title"] = "View Complaints"
         context["all_bookings"] = Complaints.objects.filter(username=self.request.user)
         return context
+    def get_queryset(self):
+        bookings = Booking.objects.all()
+        for booking in bookings:
+            booking.save()
+        return super().get_queryset()
 
 
 @login_required(login_url="signup")
@@ -405,6 +460,13 @@ def add_complaints(request):
             messages.success(
                 request, "Complaint Registered Successfully", extra_tags="alert-success"
             )
+            create_notification(request.user, "Your complaint has been submitted successfully. We'll review it soon.")
+
+            # Notify the admin about the new complaint
+            admin_users = CustomUser.objects.filter(role="ADMIN")
+            for admin_user in admin_users:
+                create_notification(admin_user, f"A new complaint has been submitted by {request.user.username}. Check it now.")
+
 
             return redirect("view_complaints")
         else:
@@ -436,6 +498,11 @@ class AllComplaintsListView(LoginRequiredMixin, ListView):
         context["page_title"] = "View Complaints"
         context["all_bookings"] = Complaints.objects.all()
         return context
+    def get_queryset(self):
+        bookings = Booking.objects.all()
+        for booking in bookings:
+            booking.save()
+        return super().get_queryset()
 
 
 @login_required(login_url="signup")
@@ -474,16 +541,25 @@ def delete_complaints(request, pk):
 
 
 @login_required(login_url="signup")
-def create_respond(request,pk):
-    if request.user.role =="ADMIN":
-        to_update=get_object_or_404(Complaints,id=pk)
+def create_respond(request, pk):
+    if request.user.role == "ADMIN":
+        to_update = get_object_or_404(Complaints, id=pk)
+        notify = to_update.username
         if request.method == "POST":
-            form = RespondComplaintForm(request.POST,instance=to_update)
+            form = RespondComplaintForm(request.POST, instance=to_update)
             if form.is_valid():
                 form.save()
                 messages.success(
-                    request, "Add  respond to the complaints", extra_tags="alert-success"
+                    request,
+                    "Add  respond to the complaints",
+                    extra_tags="alert-success",
                 )
+                if request.user.is_authenticated:
+                    create_notification(
+                        notify,
+                        "The Authority has reviewed your Complaint and provided a response.",
+                    )
+
                 return redirect("dashboard_admin")
             else:
                 for error_list in form.errors.values():

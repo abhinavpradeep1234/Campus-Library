@@ -1,5 +1,6 @@
 from django import forms
 from .models import Library, Booking, Complaints
+
 # Respond
 
 
@@ -9,6 +10,7 @@ class LibraryForm(forms.ModelForm):
         fields = [
             "book_name",
             "book_author",
+            "book_id",
             "category",
             "languages",
             "image",
@@ -18,6 +20,7 @@ class LibraryForm(forms.ModelForm):
         widgets = {
             "book_name": forms.TextInput(attrs={"class": "form-control"}),
             "book_author": forms.TextInput(attrs={"class": "form-control"}),
+            "book_id": forms.NumberInput(attrs={"class": "form-control"}),
             "languages": forms.TextInput(attrs={"class": "form-control"}),
             "category": forms.TextInput(attrs={"class": "form-control"}),
             "image": forms.FileInput(attrs={"class": "form-control"}),
@@ -64,9 +67,17 @@ class ComplaintForm(forms.ModelForm):
     class Meta:
         model = Complaints
         fields = ["report_issue", "book_name"]
+        widgets = {
+            "book_name": forms.Select(attrs={"class": "form-control"}),
+            "report_issue": forms.TextInput(attrs={"class": "form-control"}),
+        }
 
 
 class RespondComplaintForm(forms.ModelForm):
     class Meta:
         model = Complaints
         fields = ["responds"]
+        widgets = {
+            "book_name": forms.Select(attrs={"class": "form-control"}),
+            "responds": forms.TextInput(attrs={"class": "form-control"}),
+        }

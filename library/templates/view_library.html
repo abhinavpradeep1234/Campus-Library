@@ -30,17 +30,16 @@
             <button class="btn btn-outline-success ms-2" type="submit">Search</button>
             <button class="btn btn-outline-danger ms-2" type="reset">Clear</button>
           </form>
-          {% if request.user.role == "ADMIN"%}
-          <a href="{% url 'add_library' %}">
-            <button class="btn btn-outline-primary ms-2" type="submit">Add Book</button>
-          </a>
-
+          {% if request.user.role == "ADMIN" %}
+            <a href="{% url 'add_library' %}">
+              <button class="btn btn-outline-primary ms-2" type="submit">Add Book</button>
+            </a>
           {% endif %}
         </div>
       </div>
     </div>
   </div>
-  {% if  all_books %}
+  {% if all_books %}
     <div class="container mt-4">
       <div class="container mt-4">
         <div class="row">
@@ -115,12 +114,13 @@
               </div>
             </div>
           {% endfor %}
-          {% include 'pagination.html' %}
+          {% include "pagination.html" %}
         {% else %}
           {% comment %} <div class="alert alert-success text-center" role="alert">Currently No Books Added to Library</div> {% endcomment %}
         </div>
       </div>
-    </div>
+    </div>  
+   </div>
     <style>
 .card{
 width:310px;

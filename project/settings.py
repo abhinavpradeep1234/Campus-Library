@@ -57,8 +57,7 @@ ROOT_URLCONF = "project.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / 'templates'],
-        
+        "DIRS": [BASE_DIR / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -154,9 +153,9 @@ EMAIL_HOST = "smtp.gmail.com"
 
 EMAIL_PORT = 587
 
-EMAIL_HOST_USER = "smartpublictoilets@gmail.com"  # Your Email
+EMAIL_HOST_USER = "your email@gmail.com"  # Your Email
 
 
-EMAIL_HOST_PASSWORD = "tjph srzt kigj ojyo"  # your App password
+EMAIL_HOST_PASSWORD = "#type here random 16 digit  app password"  # your App password
 
 EMAIL_USE_TLS = True

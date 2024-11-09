@@ -13,7 +13,7 @@ from library.models import Library
 from django.shortcuts import get_object_or_404
 from library.forms import UpdateStatusForm
 from .forms import RegistrationUserForm
-from library.models import Booking,Complaints
+from library.models import Booking, Complaints
 from users.utils import create_notification
 
 from django.views.generic import ListView
@@ -81,8 +81,8 @@ def log_out(request):
 
 @login_required(login_url="signup")
 def home(request):
-    if request.user.is_authenticated:
-        create_notification(request.user, "Welcome To library Explore your book")
+    # if request.user.is_authenticated:
+    #     create_notification(request.user, "Welcome To library Explore your book")
     return render(request, "index.html")
 
 
@@ -185,8 +185,8 @@ def dashboard_admin(request):
             "form": UpdateStatusForm(),
             "fine": fine_count,
             "unread_count": unread_count,
-            "complaints_count":Complaints.objects.count(),
-            "all_bookings":Complaints.objects.all(),
+            "complaints_count": Complaints.objects.count(),
+            "all_bookings": Complaints.objects.all(),
         }
         return render(request, "admin_dashboard.html", context)
     return redirect("404")
@@ -314,13 +314,10 @@ def mark_as_read(request, pk):
 
 
 def error_404(request):
-    context={"page_title":"403"}
-    return render(request, "404.html",context)
-
+    context = {"page_title": "403"}
+    return render(request, "404.html", context)
 
 
 def forget_password(request):
-    context={"page_title":"Forget Password"}
-    return render(request, "forget.html",context)
-
-    
+    context = {"page_title": "Forget Password"}
+    return render(request, "forget.html", context)
