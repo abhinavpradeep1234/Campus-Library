@@ -33,7 +33,6 @@ class Booking(models.Model):
     fine = models.PositiveIntegerField(default=0, editable=False)
     status = models.CharField(max_length=50, choices=STATUS, default="on hold")
     returned_date = models.DateField(editable=False, blank=True, null=True)
-    issued_date = models.DateTimeField(auto_now=True)
 
     def save(self, *args, **kwargs):
         # Set due_date if it's not already set
