@@ -124,11 +124,16 @@
       <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
       <h5 class="text-center text-white ">Library Management System</h5>
       <br>
+      {% if user.image%}
       <img src="{{ user.image.url }}"
            class="rounded-circle d-block mx-auto"
-           style="width: 80px;
-                  height:80px"
-           alt="...">
+           style="width: 130px; height: 130px;"
+           alt="Profile Image">
+       
+           {% else %} 
+           <img src="static/image/user_default.png" alt="profile_picture" width="200px" height="200px" id="profile-picture" class="rounded-circle">
+           {% endif %} 
+
       <h6 class="text-center text-white">{{ user }}</h6>
       {% if request.user.role == "ADMIN" %}<h6 class="text-center text-white">{{ user.role }}{{ notify }}</h6>{% endif %}
       <br>

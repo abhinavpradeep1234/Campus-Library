@@ -58,9 +58,36 @@ class UpdateStatusForm(forms.ModelForm):
         model = Booking
         fields = ["status"]
 
-        widgets = {
-            "status": forms.Select(attrs={"class": "form-control"}),
-        }
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        for field in self.fields:
+            self.fields[field].widget.attrs.update({"class": "form-control"})
+
+        allowed_choices = [
+            choice
+            for choice in Booking.STATUS
+            if choice[0] in ["returned", "on hold", "issued"]
+        ]
+        self.fields["status"].choices = allowed_choices
+
+
+class UserUpdateStatusForm(forms.ModelForm):
+
+    class Meta:
+        model = Booking
+        fields = ["status"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        for field in self.fields:
+            self.fields[field].widget.attrs.update({"class": "form-control"})
+
+        allowed_choices = [
+            choice for choice in Booking.STATUS if choice[0] in ["returned"]
+        ]
+        self.fields["status"].choices = allowed_choices
 
 
 class ComplaintForm(forms.ModelForm):

@@ -107,10 +107,11 @@
                         </div>
                     </div>
                 {% endfor %}
-            {% else %}
-                <div class="alert alert-success text-center" role="alert">No Books Returned in user!!</div>
             </table>
             {% include 'pagination.html'%}
+            {% else %}
+                <div class="alert alert-success text-center" role="alert">No Books Returned in user!!</div>
+           
 
         </div>
     {% endif %}

@@ -10,6 +10,7 @@ from library.forms import (
     UpdateStatusForm,
     ComplaintForm,
     RespondComplaintForm,
+    UserUpdateStatusForm,
 )
 from users.utils import create_notification
 from users.models import Notification, CustomUser
@@ -60,45 +61,6 @@ class LibraryListView(LoginRequiredMixin, ListView):
                 )
 
         return queryset
-
-
-# class LibraryListView(LoginRequiredMixin, ListView):
-#     model = Library
-#     template_name = "view_library.html"
-#     extra_context = {
-#         "page_title": "View Library",
-#     }
-#     context_object_name = "all_books"
-#     paginate_by = 4
-#     ordering = ["id"]
-
-#     def get_queryset(self):
-#         bookings = Booking.objects.all()
-
-#         for booking in bookings:
-#             booking.save()
-#         return super().get_queryset()
-#         search = self.request.GET.get("search")
-
-#         filter_type = self.request.GET.get("search_filter")
-#         queryset = super().get_queryset()
-
-#         if search:
-#             if filter_type == "book":
-#                 queryset = queryset.filter(book_name__icontains=search)
-#             elif filter_type == "languages":
-#                 queryset = queryset.filter(languages__icontains=search)
-#             elif filter_type == "category":
-#                 queryset = queryset.filter(category__icontains=search)
-
-#             if not queryset.exists():
-#                 messages.error(
-#                     self.request,
-#                     "Sorry Your Entered Data is Not Found",
-#                     extra_tags="alert-danger",
-#                 )
-
-#         return queryset
 
 
 @login_required(login_url="signup")
@@ -258,11 +220,17 @@ def add_booking(request, pk):
             )
 
             # Create a notification if the user is authenticated
-            if request.user.is_authenticated:
+            admins = CustomUser.objects.filter(role="ADMIN")
+            for admin in admins:
                 create_notification(
-                    request.user,
-                    "Booking confirmed! Please visit the library to collect your book.",
+                    admin,
+                    f"user {request.user} Booked a Book {booking.book_name} check it now !!",
                 )
+
+            create_notification(
+                request.user,
+                "Booking confirmed! Please visit the library to collect your book.",
+            )
 
             return redirect("dashboard")
 
@@ -301,9 +269,8 @@ def update_booking(request, pk):
                 Notification.objects.create(
                     username=admin_user,
                     notification=f"The user {request.user.username} has updated their booking status to 'returned'.",
-                    is_mark=False
+                    is_mark=False,
                 )
-
 
             return redirect("dashboard")
         else:
@@ -341,6 +308,26 @@ def delete_booking(request, pk):
 
         return redirect("dashboard")
     return redirect("404")
+
+
+@login_required(login_url="signup")
+def cancel_booking(request, pk):
+
+    to_delete = get_object_or_404(Booking, id=pk)
+    book_to_update = to_delete.book_name
+
+    to_delete.delete()
+    book_to_update.is_available = True
+    book_to_update.save()
+
+    messages.success(request, "You canceled the Book ", extra_tags="alert-success")
+    admin = CustomUser.objects.filter(role="ADMIN")
+    create_notification(request.user, "Your Booking canceled...")
+
+    for admins in admin:
+        create_notification(admins, f"User {to_delete.username} canceled Book...")
+
+    return redirect("dashboard")
 
 
 class ReturnStatusListView(LoginRequiredMixin, ListView):
@@ -402,6 +389,35 @@ class FineListView(LoginRequiredMixin, ListView):
         return super().get_queryset()
 
 
+class IssuedListView(LoginRequiredMixin, ListView):
+    model = Booking
+    template_name = "issued_filter.html"
+    paginate_by = 8
+    ordering = ["id"]
+
+    # context_object_name = "all_bookings"
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.role != "ADMIN":
+            return redirect("404")
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["page_title"] = "Issued Users"
+        context["form"] = UpdateStatusForm
+        context["all_bookings"] = Booking.objects.filter(status="issued").all()
+        context["unread_count"] = Notification.objects.filter(
+            is_mark=False, username=self.request.user
+        ).count()
+        return context
+
+    def get_queryset(self):
+        bookings = Booking.objects.all()
+        for booking in bookings:
+            booking.save()
+        return super().get_queryset()
+
+
 class OnHoldStatusListView(LoginRequiredMixin, ListView):
     model = Booking
     template_name = "status_on_hold_filter.html"
@@ -442,6 +458,7 @@ class ComplaintsListView(LoginRequiredMixin, ListView):
         context["page_title"] = "View Complaints"
         context["all_bookings"] = Complaints.objects.filter(username=self.request.user)
         return context
+
     def get_queryset(self):
         bookings = Booking.objects.all()
         for booking in bookings:
@@ -460,13 +477,18 @@ def add_complaints(request):
             messages.success(
                 request, "Complaint Registered Successfully", extra_tags="alert-success"
             )
-            create_notification(request.user, "Your complaint has been submitted successfully. We'll review it soon.")
+            create_notification(
+                request.user,
+                "Your complaint has been submitted successfully. We'll review it soon.",
+            )
 
             # Notify the admin about the new complaint
             admin_users = CustomUser.objects.filter(role="ADMIN")
             for admin_user in admin_users:
-                create_notification(admin_user, f"A new complaint has been submitted by {request.user.username}. Check it now.")
-
+                create_notification(
+                    admin_user,
+                    f"A new complaint has been submitted by {request.user.username}. Check it now.",
+                )
 
             return redirect("view_complaints")
         else:
@@ -498,6 +520,7 @@ class AllComplaintsListView(LoginRequiredMixin, ListView):
         context["page_title"] = "View Complaints"
         context["all_bookings"] = Complaints.objects.all()
         return context
+
     def get_queryset(self):
         bookings = Booking.objects.all()
         for booking in bookings:

@@ -37,7 +37,7 @@ class LoginForm(forms.Form):
     )
 
 
-class RegistrationUserForm(forms.ModelForm):
+class RegistrationUserForm(UserCreationForm):
     class Meta:
         model = CustomUser
         fields = ["username", "first_name", "last_name", "role", "email"]
@@ -53,6 +53,14 @@ class RegistrationUserForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["username"].help_text = ""
+        self.fields["password1"].help_text = ""
+        self.fields["password2"].help_text = ""
+        self.fields["password1"].widget = forms.PasswordInput(
+            attrs={"class": "form-control"}
+        )
+        self.fields["password2"].widget = forms.PasswordInput(
+            attrs={"class": "form-control"}
+        )
 
 
 class ProfileUpdate(forms.ModelForm):

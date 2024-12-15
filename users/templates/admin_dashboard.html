@@ -15,8 +15,9 @@
                 <a href="{% url 'fine' %}" class="btn btn-outline-primary btn-sm w-30">Having Fine</a>
                 <a href="{% url 'return_status' %}"
                    class="btn btn-outline-primary btn-sm">Returned user</a>
-                <a href="{% url 'on_hold' %}" class="btn btn-outline-primary btn-sm">Hold user</a>
-            </div>
+                   <a href="{% url 'on_hold' %}" class="btn btn-outline-primary btn-sm">Hold user</a>
+                   <a href="{% url 'issued' %}" class="btn btn-outline-primary btn-sm">Issued</a>
+                </div>
             <div class="container ms-4 mt-2">
                 <div class="row  g-3">
                     <div class="col-md-3">
@@ -92,16 +93,17 @@
                 'Books that have been returned',
                 'Users who have been fined',
                 'Registerd complaints',
-                "Authorized Users"
+                "Authorized Users",
+                "The Book Issued to the User "
             ];
 
             myChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: ['Total Books', 'Total Users', 'Total Booking', 'Books on Hold', 'Books Returned', 'Fined Users','complaints','Admin Rights'],
+                    labels: ['Total Books', 'Total Users', 'Total Booking', 'Books on Hold', 'Books Returned', 'Fined Users','complaints','Admin Rights',"Issued"],
                     datasets: [{
                         label: 'Overview of Library',
-                        data: [{{Books}}, {{users}}, {{booked}}, {{hold}}, {{returned}}, {{fine}},{{complaints_count}},{{admin_count}}],
+                        data: [{{Books}}, {{users}}, {{booked}}, {{hold}}, {{returned}}, {{fine}},{{complaints_count}},{{admin_count}},{{issued}}],
                         backgroundColor: [
                             'rgba(255, 99, 132, 1.5)',
                             'rgba(54, 162, 235, 1.5)',

@@ -39,8 +39,14 @@
                         class="btn btn-outline-primary btn-sm"
                         data-bs-toggle="modal"
                         data-bs-target="#exampleModal{{ all_booking.id }}">{{ all_booking.status }}</button>
+                {% if all_booking.status == "on hold" %}
+                  <a href="{% url 'cancel_booking' all_booking.id %}">
+                    <button class="btn btn-outline-danger btn-sm ms-2" type="submit">Cancel</button>
+                  </a>
+                {% endif %}
               </td>
-                <!-- Modal -->
+              <!-- Modal -->
+              {% if all_booking.status != "on hold" %}
                 <div class="modal fade"
                      id="exampleModal{{ all_booking.id }}"
                      tabindex="-1"
@@ -67,10 +73,11 @@
                 </div>
               </tr>
             </tbody>
-          {% endfor %}
-        {% else %}
-          <div class="alert alert-success text-center" role="alert">No Book Booked At the Moment!!</div>
-        </table>
-      {% endif %}
-    </div>
-  {% endblock content %}
+          {% endif %}
+        {% endfor %}
+      {% else %}
+        <div class="alert alert-success text-center" role="alert">No Book Booked At the Moment!!</div>
+      </table>
+    {% endif %}
+  </div>
+{% endblock content %}

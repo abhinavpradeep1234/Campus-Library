@@ -12,9 +12,13 @@ urlpatterns = [
         "update/library/booking/<int:pk>", views.update_booking, name="update_booking"
     ),
     path("delete/booking/<int:pk>", views.delete_booking, name="delete_booking"),
+    path("cancel/booking/<int:pk>", views.cancel_booking, name="cancel_booking"),
+
     path("view/status", views.ReturnStatusListView.as_view(), name="return_status"),
     path("view/status/on_hold", views.OnHoldStatusListView.as_view(), name="on_hold"),
     path("view/fine", views.FineListView.as_view(), name="fine"),
+    path("view/issued", views.IssuedListView.as_view(), name="issued"),
+
     # for user
     path("view/complaints", views.ComplaintsListView.as_view(), name="view_complaints"),
     # for admin

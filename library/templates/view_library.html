@@ -6,7 +6,7 @@
         <li class="breadcrumb-item">
           <a href="{% url "home" %}"  class="text-decoration-none text-black"><i class="bi bi-house-door-fill"></i></a>
         </li>
-        <li class="breadcrumb-item active" aria-current="page">View Libarary</li>
+        <li class="breadcrumb-item active" aria-current="page">View Library</li>
       </ol>
     </nav>
   </div>
@@ -119,9 +119,9 @@
           {% comment %} <div class="alert alert-success text-center" role="alert">Currently No Books Added to Library</div> {% endcomment %}
         </div>
       </div>
-    </div>  
-   </div>
-    <style>
+    </div>
+  </div>
+  <style>
 .card{
 width:310px;
 height:390px;
@@ -130,6 +130,6 @@ height:390px;
 width:100px;
 height:120px;
 }
-    </style>
-  {% endif %}
+  </style>
+{% endif %}
 {% endblock content %}

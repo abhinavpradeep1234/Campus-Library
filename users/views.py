@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 
 from .forms import SignupForm, LoginForm, ProfileUpdate
 from django.contrib import messages
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from .models import CustomUser, Notification
 from django.contrib.auth.decorators import login_required
 
@@ -10,9 +10,10 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 from library.models import Library
 from django.shortcuts import get_object_or_404
-from library.forms import UpdateStatusForm
+from library.forms import UserUpdateStatusForm, UpdateStatusForm
 from .forms import RegistrationUserForm
 from library.models import Booking, Complaints
+
 # from users.utils import create_notification
 
 from django.views.generic import ListView
@@ -74,6 +75,8 @@ def log_in(request):
 
 
 def log_out(request):
+    logout(request)
+
     messages.success(request, "Logged Out", extra_tags="alert-success")
     return redirect("signup")
 
@@ -152,7 +155,7 @@ def dashboard_user(request):
     context = {
         "page_title": "User Dashboard",
         "all_bookings": Booking.objects.filter(username=username),
-        "form": UpdateStatusForm,
+        "form": UserUpdateStatusForm,
         "unread_count": unread_count,
     }
     return render(request, "dashboard_users.html", context)
@@ -186,6 +189,7 @@ def dashboard_admin(request):
             "unread_count": unread_count,
             "complaints_count": Complaints.objects.count(),
             "all_bookings": Complaints.objects.all(),
+            "issued":Booking.objects.filter(status="issued").count()
         }
         return render(request, "admin_dashboard.html", context)
     return redirect("404")
@@ -315,5 +319,3 @@ def mark_as_read(request, pk):
 def error_404(request):
     context = {"page_title": "403"}
     return render(request, "404.html", context)
-
-

@@ -7,7 +7,7 @@ from django.contrib.auth.models import AbstractUser
 class CustomUser(AbstractUser):
     ROLE = (("ADMIN", "ADMIN"),)
     role = models.CharField(max_length=20, choices=ROLE, null=True, blank=True)
-    image = models.ImageField(upload_to="new_library", default="static/image/user_default.png")
+    image = models.ImageField(upload_to="profile", default="static/image/user_default.png")
 
 
 class Notification(models.Model):

@@ -16,8 +16,7 @@
             </nav>
         </div>
         <div class="d-grid gap-2 d-md-flex justify-content-md-end me-4">
-
-        <a href="{% url 'add_user' %}" class="btn btn-primary btn-sm">Add User</a>
+            <a href="{% url 'add_user' %}" class="btn btn-primary btn-sm">Add User</a>
         </div>
         {% if all_users %}
             <div class="container mt-4">
@@ -26,10 +25,10 @@
                         <tr class="text-center">
                             <th scope="col">Username</th>
                             <th scope="col">First Name</th>
+                            <th scope="col">Last Name</th>
                             <th scope="col">Date Joined</th>
                             <th scope="col">Last Login</th>
                             <th scope="col">Role</th>
-                            <th scope="col">Last Name</th>
                             <th colspan=2>Action</th>
                         </tr>
                     </thead>
@@ -38,10 +37,10 @@
                             <tr class="text-center">
                                 <td>{{ all_user.username }}</td>
                                 <td>{{ all_user.first_name }}</td>
+                                <td>{{ all_user.last_name }}</td>
                                 <td>{{ all_user.date_joined }}</td>
                                 <td>{{ all_user.last_login }}</td>
                                 <td>{{ all_user.role }}</td>
-                                <td>{{ all_user.last_name }}</td>
                                 <td>
                                     <button type="button"
                                             class="btn btn-sm"
