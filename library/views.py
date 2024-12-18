@@ -180,7 +180,9 @@ class BookingListView(LoginRequiredMixin, ListView):
 
 @login_required(login_url="signup")
 def add_booking(request, pk):
+
     all_book = get_object_or_404(Library, id=pk)
+    booking_limit = Booking.objects.filter(username=request.user).count()
     unread_count = Notification.objects.filter(
         is_mark=False, username=request.user
     ).count()
@@ -195,10 +197,10 @@ def add_booking(request, pk):
     if request.method == "POST":
         form = BookingForm(request.POST)
         if form.is_valid():
-            if Booking.objects.filter(username=request.user).exists():
+            if booking_limit >= 3:
                 messages.error(
                     request,
-                    "You already have an active booking. You can't book more than one book.",
+                    "You have already reached the limit . You can't book more than three book.",
                     extra_tags="alert-danger",
                 )
                 context = {
