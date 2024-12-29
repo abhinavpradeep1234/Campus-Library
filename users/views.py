@@ -159,6 +159,25 @@ def dashboard_user(request):
         "unread_count": unread_count,
     }
     return render(request, "dashboard_users.html", context)
+@login_required(login_url="signup")
+def list_reservation(request):
+    username = request.user
+    bookings = Booking.objects.filter(username=request.user)
+
+    for booking in bookings:
+        booking.save()
+
+    unread_count = Notification.objects.filter(
+        is_mark=False, username=request.user
+    ).count()
+
+    context = {
+        "page_title": "View Reservation",
+        "all_bookings": Booking.objects.filter(username=username),
+        "form": UserUpdateStatusForm,
+        "unread_count": unread_count,
+    }
+    return render(request, "view_reservation.html", context)
 
 
 @login_required(login_url="signup")

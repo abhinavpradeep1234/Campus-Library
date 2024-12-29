@@ -8,6 +8,10 @@ urlpatterns = [
     path("delete/library/<int:pk>", views.delete_library, name="delete_library"),
     path("library/booking", views.BookingListView.as_view(), name="view_booking"),
     path("add/library/booking/<int:pk>", views.add_booking, name="add_booking"),
+
+    #reservation
+    # path("add/library/reservation/<int:pk>", views.add_reservation, name="add_reservation"),
+
     path(
         "update/library/booking/<int:pk>", views.update_booking, name="update_booking"
     ),

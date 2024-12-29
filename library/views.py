@@ -253,6 +253,84 @@ def add_booking(request, pk):
     return render(request, "add_booking.html", context)
 
 
+
+
+
+# @login_required(login_url="signup")
+# def add_reservation(request, pk):
+
+#     all_book = get_object_or_404(Library, id=pk)
+#     booking_limit = Booking.objects.filter(username=request.user).count()
+#     unread_count = Notification.objects.filter(
+#         is_mark=False, username=request.user
+#     ).count()
+#     available_booking = Library.objects.filter(is_available=True)
+#     if not available_booking:
+#         messages.error(
+#             request,
+#             "Currently No Books Are Available .",
+#             extra_tags="alert-danger",
+#         )
+
+#     if request.method == "POST":
+#         form = ReservationForm(request.POST)
+#         if form.is_valid():
+#             if booking_limit >= 1:
+#                 messages.error(
+#                     request,
+#                     "You have already reached the limit . You can reserve one book at a time",
+#                     extra_tags="alert-danger",
+#                 )
+#                 context = {
+#                     "page_title": "Book Now",
+#                     "form": form,
+#                     "unread_count": unread_count,
+#                 }
+#                 return render(request, "add_booking.html", context)
+#             book = form.cleaned_data["book_name"]
+#             booking = form.save(commit=False)
+#             booking.username = request.user
+#             booking.save()
+#             book.is_available = False
+#             book.save()
+#             messages.success(
+#                 request,
+#                 "Your booking Reservation successful! Check it now.",
+#                 extra_tags="alert-success",
+#             )
+
+#             # Create a notification if the user is authenticated
+#             # admins = CustomUser.objects.filter(role="ADMIN")
+#             # for admin in admins:
+#             #     create_notification(
+#             #         admin,
+#             #         f"user {request.user} Booked a Book {booking.book_name} check it now !!",
+#             #     )
+
+#             # create_notification(
+#             #     request.user,
+#             #     "Booking confirmed! Please visit the library to collect your book.",
+#             # )
+
+#             return redirect("list_reservation")
+
+#         else:
+#             for error_list in form.errors.values():
+#                 for errors in error_list:
+#                     messages.error(request, errors, extra_tags="alert-danger")
+
+#     initial_data = {"book_name": all_book}
+#     form = BookingForm(initial_data)
+
+#     context = {
+#         "page_title": "Book Now",
+#         "form": form,
+#         "unread_count": unread_count,
+#         "all_book": all_book,
+#     }
+#     return render(request, "add_booking.html", context)
+
+
 @login_required(login_url="signup")
 def update_booking(request, pk):
     unread_count = Notification.objects.filter(

@@ -69,6 +69,13 @@
                          href="{% url 'add_booking' all_book.id %}"
                          role="button"> <i class="bi bi-check2"></i>Book Now</a>
                     </div>
+
+{% comment %} 
+                    <div class="d-grid gap-2 col-6 mx-auto">
+                      <a class="btn btn-primary btn-sm"
+                         href="{% url 'add_reservation' all_book.id %}"
+                         role="button"> <i class="bi bi-check2"></i>Reservation</a>
+                    </div> {% endcomment %}
                   {% endif %}
                   {% comment %} <div class="d-grid gap-2 mx-auto"> {% endcomment %}
                   {% if user.role == "ADMIN" %}
