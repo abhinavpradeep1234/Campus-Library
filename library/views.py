@@ -334,18 +334,130 @@ def add_booking(request, pk):
 #     return render(request, "add_booking.html", context)
 
 
-
-
-
+from datetime import timedelta
 from django.utils import timezone
-from datetime import timedelta  # Importing timedelta for time comparison
-from django.shortcuts import get_object_or_404, render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from .models import BookReservation, Library, CustomUser
 from .forms import ReservationForm
-  # Assuming create_notification is a utility function for sending notifications
+from .models import Library, BookReservation
+import time
 
-@login_required(login_url="signup")
+# def add_reservation(request, pk):
+#     # Fetch the book you want to reserve
+#     all_book = get_object_or_404(Library, id=pk)
+
+#     # Get the current number of bookings for this user
+#     booking_limit = BookReservation.objects.filter(username=request.user).count()
+
+#     # Get unread notifications for the user
+#     unread_count = Notification.objects.filter(is_mark=False, username=request.user).count()
+
+#     # Check if there are any available books for reservation
+#     available_booking = Library.objects.filter(is_available=True)
+#     if not available_booking:
+#         messages.error(request, "Currently No Books Are Available.", extra_tags="alert-danger")
+
+#     # Handle the form submission
+#     if request.method == "POST":
+#         form = ReservationForm(request.POST)
+#         if form.is_valid():
+#             # Check if the user has already booked a book (limit to 1 booking)
+#             if booking_limit >= 1:
+#                 messages.error(
+#                     request,
+#                     "You have already reached the limit. You can reserve one book at a time.",
+#                     extra_tags="alert-danger",
+#                 )
+#                 context = {
+#                     "page_title": "Book Now",
+#                     "form": form,
+#                     "unread_count": unread_count,
+#                 }
+#                 return render(request, "add_booking.html", context)
+
+#             # Get the selected book from the form
+#             book = form.cleaned_data["book_name"]
+
+#             # Save the reservation instance
+#             booking = form.save(commit=False)
+#             booking.username = request.user
+#             booking.reserved_date = timezone.now()  # Make sure to set the reserved date
+#             booking.save()
+
+#             # Mark the book as unavailable after booking
+#             book.is_available = False
+#             book.save()
+
+#             # Send notifications to admins about the reservation
+#             admins = CustomUser.objects.filter(role="ADMIN")
+#             for admin in admins:
+#                 create_notification(
+#                     admin,
+#                     f"user {request.user} reserved the book {booking.book_name} - check it now!!",
+#                 )
+
+#             create_notification(
+#                 request.user,
+#                 "Your booking reservation was successful! Check it now.",
+#             )
+
+#             messages.success(
+#                 request,
+#                 "Your booking reservation was successful! Check it now.",
+#                 extra_tags="alert-success",
+#             )
+
+
+#             # Time difference logic: check if the booking exceeds 2 minutes
+#             delete_time_limit = timedelta(minutes=2)
+#             time_diff = timezone.now() - booking.reserved_date
+
+#             # Log the time difference for debugging
+#             print(f"Time Difference: {time_diff.total_seconds()} seconds")
+#             print(f"Created At: {booking.reserved_date}, Now: {timezone.now()}")
+
+#             # Wait for 2 minutes (for testing purposes)
+#             time.sleep(120)  # Adding 120 seconds to simulate time passing (you should remove this in production!)
+
+#             # Recalculate time difference after sleep
+#             time_diff = timezone.now() - booking.reserved_date
+#             if time_diff > delete_time_limit:
+#                 booking.delete()
+#                 messages.warning(
+#                     request,
+#                     "Your reservation was automatically deleted as it exceeded the 2-minute limit.",
+#                     extra_tags="alert-warning",
+#                 )
+
+#             # Redirect to the list of reservations
+#             return redirect("list_reservation")
+
+#         else:
+#             # If the form is invalid, display errors
+#             for error_list in form.errors.values():
+#                 for errors in error_list:
+#                     messages.error(request, errors, extra_tags="alert-danger")
+
+#     # Initial data for the form (pre-fill the book field)
+#     initial_data = {"book_name": all_book}
+#     form = ReservationForm(initial_data)
+
+#     context = {
+#         "page_title": "Book Now",
+#         "form": form,
+#         "unread_count": unread_count,
+#         "all_book": all_book,
+#     }
+
+#     # Render the template
+#     return render(request, "add_booking.html", context)
+
+
+from django.utils.timezone import now
+from datetime import timedelta
+import threading
+
+
 def add_reservation(request, pk):
     # Fetch the book you want to reserve
     all_book = get_object_or_404(Library, id=pk)
@@ -354,12 +466,16 @@ def add_reservation(request, pk):
     booking_limit = BookReservation.objects.filter(username=request.user).count()
 
     # Get unread notifications for the user
-    unread_count = Notification.objects.filter(is_mark=False, username=request.user).count()
+    unread_count = Notification.objects.filter(
+        is_mark=False, username=request.user
+    ).count()
 
     # Check if there are any available books for reservation
     available_booking = Library.objects.filter(is_available=True)
     if not available_booking:
-        messages.error(request, "Currently No Books Are Available.", extra_tags="alert-danger")
+        messages.error(
+            request, "Currently no books are available.", extra_tags="alert-danger"
+        )
 
     # Handle the form submission
     if request.method == "POST":
@@ -372,12 +488,15 @@ def add_reservation(request, pk):
                     "You have already reached the limit. You can reserve one book at a time.",
                     extra_tags="alert-danger",
                 )
-                context = {
-                    "page_title": "Book Now",
-                    "form": form,
-                    "unread_count": unread_count,
-                }
-                return render(request, "add_booking.html", context)
+                return render(
+                    request,
+                    "add_booking.html",
+                    {
+                        "page_title": "Book Now",
+                        "form": form,
+                        "unread_count": unread_count,
+                    },
+                )
 
             # Get the selected book from the form
             book = form.cleaned_data["book_name"]
@@ -385,6 +504,7 @@ def add_reservation(request, pk):
             # Save the reservation instance
             booking = form.save(commit=False)
             booking.username = request.user
+            booking.reserved_date = now()  # Set the reserved date
             booking.save()
 
             # Mark the book as unavailable after booking
@@ -396,38 +516,25 @@ def add_reservation(request, pk):
             for admin in admins:
                 create_notification(
                     admin,
-                    f"user {request.user} reserved the book {booking.book_name} - check it now!!",
+                    f"User {request.user} reserved the book {booking.book_name} - check it now!",
                 )
 
             create_notification(
                 request.user,
-                "Your booking reservation was successful! Check it now.",
+                "Your booking reservation was successful! Please confirm it within 2 minutes.",
             )
 
             messages.success(
                 request,
-                "Your booking reservation was successful! Check it now.",
+                "Your booking reservation was successful! Please confirm it within 2 minutes.",
                 extra_tags="alert-success",
             )
 
-            # Time difference logic: check if the booking exceeds 2 minutes
-            delete_time_limit = timedelta(minutes=2)
-            time_diff = timezone.now() - booking.reserved_date
+            # Schedule the deletion of unconfirmed reservations
+            threading.Thread(
+                target=auto_delete_unconfirmed_booking, args=(booking.id, request.user)
+            ).start()
 
-            # Log the time difference for debugging
-            print(f"Time Difference: {time_diff.total_seconds()} seconds")
-            print(f"Created At: {booking.reserved_date}, Now: {timezone.now()}")
-
-            # If the time difference is greater than 2 minutes, delete the reservation
-            if time_diff > delete_time_limit:
-                booking.delete()
-                messages.warning(
-                    request,
-                    "Your reservation was automatically deleted as it exceeded the 2-minute limit.",
-                    extra_tags="alert-warning",
-                )
-
-            # Redirect to the list of reservations
             return redirect("list_reservation")
 
         else:
@@ -449,6 +556,153 @@ def add_reservation(request, pk):
 
     # Render the template
     return render(request, "add_booking.html", context)
+
+
+def auto_delete_unconfirmed_booking(booking_id, user):
+    """
+    Deletes a reservation if it is not confirmed within 2 minutes.
+    """
+    try:
+        # Wait for 2 minutes
+        time.sleep(120)
+
+        # Fetch the booking
+        booking = BookReservation.objects.get(id=booking_id)
+
+        # Check if the booking is confirmed by checking the form submission
+        if booking.booking_status != "confirm booking":
+            library_book = (
+                booking.book_name
+            )  # Assuming `book_name` is related to the `Library` model
+            library_book.is_available = True
+            library_book.save()
+
+            # Delete the booking
+            booking.delete()
+
+            messages.warning(
+                user,
+                "Your reservation was automatically deleted as it was not confirmed within 2 minutes.",
+                extra_tags="alert-warning",
+            )
+    except BookReservation.DoesNotExist:
+        print(f"Booking {booking_id} does not exist.")
+
+
+from django.utils import timezone
+from datetime import timedelta  # Importing timedelta for time comparison
+from django.shortcuts import get_object_or_404, render, redirect
+from django.contrib import messages
+from .models import BookReservation, Library, CustomUser
+from .forms import ReservationForm
+
+# Assuming create_notification is a utility function for sending notifications
+
+
+@login_required(login_url="signup")
+# def add_reservation(request, pk):
+#     # Fetch the book you want to reserve
+#     all_book = get_object_or_404(Library, id=pk)
+
+#     # Get the current number of bookings for this user
+#     booking_limit = BookReservation.objects.filter(username=request.user).count()
+
+#     # Get unread notifications for the user
+#     unread_count = Notification.objects.filter(is_mark=False, username=request.user).count()
+
+#     # Check if there are any available books for reservation
+#     available_booking = Library.objects.filter(is_available=True)
+#     if not available_booking:
+#         messages.error(request, "Currently No Books Are Available.", extra_tags="alert-danger")
+
+#     # Handle the form submission
+#     if request.method == "POST":
+#         form = ReservationForm(request.POST)
+#         if form.is_valid():
+#             # Check if the user has already booked a book (limit to 1 booking)
+#             if booking_limit >= 1:
+#                 messages.error(
+#                     request,
+#                     "You have already reached the limit. You can reserve one book at a time.",
+#                     extra_tags="alert-danger",
+#                 )
+#                 context = {
+#                     "page_title": "Book Now",
+#                     "form": form,
+#                     "unread_count": unread_count,
+#                 }
+#                 return render(request, "add_booking.html", context)
+
+#             # Get the selected book from the form
+#             book = form.cleaned_data["book_name"]
+
+#             # Save the reservation instance
+#             booking = form.save(commit=False)
+#             booking.username = request.user
+#             booking.save()
+
+#             # Mark the book as unavailable after booking
+#             book.is_available = False
+#             book.save()
+
+#             # Send notifications to admins about the reservation
+#             admins = CustomUser.objects.filter(role="ADMIN")
+#             for admin in admins:
+#                 create_notification(
+#                     admin,
+#                     f"user {request.user} reserved the book {booking.book_name} - check it now!!",
+#                 )
+
+#             create_notification(
+#                 request.user,
+#                 "Your booking reservation was successful! Check it now.",
+#             )
+
+#             messages.success(
+#                 request,
+#                 "Your booking reservation was successful! Check it now.",
+#                 extra_tags="alert-success",
+#             )
+
+#             # Time difference logic: check if the booking exceeds 2 minutes
+#             delete_time_limit = timedelta(minutes=2)
+#             time_diff = timezone.now() - booking.reserved_date
+
+#             # Log the time difference for debugging
+#             print(f"Time Difference: {time_diff.total_seconds()} seconds")
+#             print(f"Created At: {booking.reserved_date}, Now: {timezone.now()}")
+
+#             # If the time difference is greater than 2 minutes, delete the reservation
+#             if time_diff > delete_time_limit:
+#                 booking.delete()
+#                 messages.warning(
+#                     request,
+#                     "Your reservation was automatically deleted as it exceeded the 2-minute limit.",
+#                     extra_tags="alert-warning",
+#                 )
+
+#             # Redirect to the list of reservations
+#             return redirect("list_reservation")
+
+#         else:
+#             # If the form is invalid, display errors
+#             for error_list in form.errors.values():
+#                 for errors in error_list:
+#                     messages.error(request, errors, extra_tags="alert-danger")
+
+#     # Initial data for the form (pre-fill the book field)
+#     initial_data = {"book_name": all_book}
+#     form = ReservationForm(initial_data)
+
+#     context = {
+#         "page_title": "Book Now",
+#         "form": form,
+#         "unread_count": unread_count,
+#         "all_book": all_book,
+#     }
+
+#     # Render the template
+#     return render(request, "add_booking.html", context)
 
 
 @login_required(login_url="signup")
