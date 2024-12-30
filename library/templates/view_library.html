@@ -70,12 +70,12 @@
                          role="button"> <i class="bi bi-check2"></i>Book Now</a>
                     </div>
 
-{% comment %} 
-                    <div class="d-grid gap-2 col-6 mx-auto">
+
+                    <div class="d-grid gap-2 col-6 mx-auto mt-2">
                       <a class="btn btn-primary btn-sm"
                          href="{% url 'add_reservation' all_book.id %}"
                          role="button"> <i class="bi bi-check2"></i>Reservation</a>
-                    </div> {% endcomment %}
+                    </div> 
                   {% endif %}
                   {% comment %} <div class="d-grid gap-2 mx-auto"> {% endcomment %}
                   {% if user.role == "ADMIN" %}

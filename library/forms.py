@@ -1,5 +1,5 @@
 from django import forms
-from .models import Library, Booking, Complaints
+from .models import Library, Booking, Complaints,BookReservation
 
 # Respond
 
@@ -108,3 +108,80 @@ class RespondComplaintForm(forms.ModelForm):
             "book_name": forms.Select(attrs={"class": "form-control"}),
             "responds": forms.TextInput(attrs={"class": "form-control"}),
         }
+
+#add reservation
+class ReservationForm(forms.ModelForm):
+    class Meta:
+        model = BookReservation
+        fields = ["book_name"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        for field in self.fields:
+            self.fields[field].widget.attrs.update({"class": "form-control"})
+            available_books = Library.objects.filter(is_available=True)
+
+        self.fields["book_name"].queryset = available_books
+
+        if not available_books.exists():
+            self.fields["book_name"].empty_label = "No books available"
+
+
+
+
+
+#booking reserved confirm
+class ConfirmReservationBookingForm(forms.ModelForm):
+    class Meta:
+        model = BookReservation
+        fields = ["booking_status"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        for field in self.fields:
+            self.fields[field].widget.attrs.update({"class": "form-control"})
+
+            
+
+
+
+#for changing status on hold like that admin
+class UpdateReservationStatusForm(forms.ModelForm):
+
+    class Meta:
+        model = BookReservation
+        fields = ["status"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        for field in self.fields:
+            self.fields[field].widget.attrs.update({"class": "form-control"})
+
+        allowed_choices = [
+            choice
+            for choice in Booking.STATUS
+            if choice[0] in ["returned", "on hold", "issued"]
+        ]
+        self.fields["status"].choices = allowed_choices
+
+#for changing status on hold like that auser
+
+class UserUpdateReservationStatusForm(forms.ModelForm):
+
+    class Meta:
+        model = BookReservation
+        fields = ["status"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        for field in self.fields:
+            self.fields[field].widget.attrs.update({"class": "form-control"})
+
+        allowed_choices = [
+            choice for choice in Booking.STATUS if choice[0] in ["returned"]
+        ]
+        self.fields["status"].choices = allowed_choices

@@ -9,7 +9,7 @@ urlpatterns = [
     path("Home", views.home, name="home"),
     path("Dashboard", views.dashboard, name="dashboard"),
         # list reservation
-    # path("list/library/reservation/", views.list_reservation, name="list_reservation"),
+    path("list/library/reservation/", views.list_reservation, name="list_reservation"),
 
     path("Dashboard/admin", views.dashboard_admin, name="dashboard_admin"),
     path("Dashboard/user", views.dashboard_user, name="dashboard_user"),

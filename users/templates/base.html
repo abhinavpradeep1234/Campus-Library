@@ -143,7 +143,9 @@
         <a href="{% url "library" %}"><i class="bi bi-collection-fill"></i><span class="d-none d-md-inline ms-1 fs-4 ms-2">Library</span></a>
         <a href="{% url 'notification' %}"><i class="bi bi-bell-fill"></i><span class="d-none d-md-inline ms-1 fs-4 ms-2">Notification</span></a>
         <a href="{% url 'profile' %}"><i class="bi bi-person-circle"></i><span class="d-none d-md-inline ms-1 fs-4 ms-2">Profile</span></a>
+        {% if request.user.role != "ADMIN"%}
         <a href="{% url 'add_complaints' %}"><i class="bi bi-patch-question"></i><span class="d-none d-md-inline ms-1 fs-4 ms-2">Report</span></a>
+        {% endif %}
         <a href="{% url 'logout' %}"><i class="bi bi-power"></i><span class="d-none d-md-inline ms-1 fs-4 ms-2">Logout</span></a>
       </div>
     </div>

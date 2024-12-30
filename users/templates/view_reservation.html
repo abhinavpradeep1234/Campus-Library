@@ -1,4 +1,4 @@
-{% comment %} {% extends "base.html" %}
+ {% extends "base.html" %}
 {% block content %}
   <div class="container ms-2">
     <nav aria-label="breadcrumb">
@@ -6,7 +6,7 @@
         <li class="breadcrumb-item">
           <a href="{% url 'home' %}"><i class="bi bi-house-door-fill text-decoration-none text-black"> </i></a>
         </li>
-        <li class="breadcrumb-item active" aria-label="page">Users Dashboard</li>
+        <li class="breadcrumb-item active" aria-label="page">{{page_title}}</li>
       </ol>
     </nav>
   </div>
@@ -18,9 +18,11 @@
           <tr class="text-center">
             <th scope="col">Username</th>
             <th scope="col">Book Name</th>
-            <th scope="col">Date Booked</th>
+            <th scope="col">Reserved Date</th>
+            <th scope="col">Due Date</th>
+            <th scope="col">Fine</th>
           
-            <th scope="col">Email</th>
+            
             <th scope="col">Status</th>
           </tr>
         </thead>
@@ -29,26 +31,29 @@
             <tr class="text-center">
               <td>{{ all_booking.username }}</td>
               <td>{{ all_booking.book_name }}</td>
-              <td>{{ all_booking.date_issue }}</td>
-              {% comment %} <td>{{ all_booking.due_date }}</td>
-              <td>₹ {{ all_booking.fine }}</td> {% endcomment %}
-              <td>{{ all_booking.email }}</td>
+              <td>{{ all_booking.reserved_date}}</td>
+              <td>{{ all_booking.due_date |default:"confirm booking then only show due date and fine" }}</td>
+              <td>{{ all_booking.fine }}</td>
               <td>
-                <!-- Button trigger modal -->
-                <button type="button"
-                        class="btn btn-outline-primary btn-sm"
-                        data-bs-toggle="modal"
-                        data-bs-target="#exampleModal{{ all_booking.id }}">{{ all_booking.status }}</button>
-                {% if all_booking.status == "on hold" %}
-                  <a href="{% url 'cancel_booking' all_booking.id %}">
-                    <button class="btn btn-outline-danger btn-sm ms-2" type="submit">Cancel</button>
+                  
+                  {% if all_booking.booking_status != "confirm booking" %}
+                  <a href="{% url 'cancel_reservation' all_booking.id %}" class="btn btn-outline-danger btn-sm me-2">
+                    Cancel
                   </a>
+                  <a href="{% url 'update_reservation' all_booking.id %}" class="btn btn-outline-primary btn-sm">
+                  confirm Booking
+                  </a>
+                  {% endif %}
+                  {% if all_booking.booking_status == "confirm booking" %}
 
-                  <a href="{% url 'add_booking' all_booking.id %}">
-                    <button class="btn btn-outline-primary btn-sm ms-2" type="submit">Book Now</button>
-                  </a>
-                {% endif %}
+                  <button type="button"
+                  class="btn btn-outline-primary btn-sm"
+                  data-bs-toggle="modal"
+                  data-bs-target="#exampleModal{{ all_booking.id }}">{{all_booking.status}}</button>
+                  {% endif %}
+
               </td>
+              
               <!-- Modal -->
               {% if all_booking.status != "on hold" %}
                 <div class="modal fade"
@@ -65,7 +70,7 @@
                                 data-bs-dismiss="modal"
                                 aria-label="Close"></button>
                       </div>
-                      <form action="{% url 'update_booking' all_booking.id %}" method="post">
+                      <form action="{% url 'user_status_reservation' all_booking.id %}" method="post">
                         {% csrf_token %}
                         <div class="modal-body">{{ form.as_p }}</div>
                         <div class="modal-footer">
@@ -84,4 +89,16 @@
       </table>
     {% endif %}
   </div>
-{% endblock content %} {% endcomment %}
+{% endblock content %} 
+
+
+
+
+
+
+
+
+
+
+
+

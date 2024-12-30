@@ -10,11 +10,11 @@
       </ol>
     </nav>
   </div>
-  {% comment %} <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-    <a href="{% url 'list_reservation'  %}">
+  <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+    <a href="{% url 'list_reservation' %}">
       <button class="btn btn-outline-success btn-sm me-4" type="submit">View Reservation</button>
     </a>
-  </div> {% endcomment %}
+  </div>
   {% if all_bookings %}
     <div class="container">
       <table class="table table-striped table-hover table-bordered table-sm mt-2">
@@ -24,10 +24,8 @@
             <th scope="col">Book Name</th>
             <th scope="col">Date Booked</th>
             <th scope="col">Due Date</th>
-           
-
             <th scope="col">Fine</th>
-                <th scope="col">Email</th>
+            <th scope="col">Email</th>
             <th scope="col">Status</th>
           </tr>
         </thead>

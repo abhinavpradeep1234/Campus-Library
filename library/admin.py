@@ -1,5 +1,5 @@
 from django.contrib import admin
-from library.models import Library, Booking,Complaints
+from library.models import Library, Booking,Complaints,BookReservation
 
 
 # Register your models here.
@@ -14,3 +14,4 @@ class LibraryAdmin(admin.ModelAdmin):
 admin.site.register(Library, LibraryAdmin)
 admin.site.register(Booking)
 admin.site.register(Complaints)
+admin.site.register(BookReservation)

@@ -10,9 +10,9 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 from library.models import Library
 from django.shortcuts import get_object_or_404
-from library.forms import UserUpdateStatusForm, UpdateStatusForm
+from library.forms import UserUpdateStatusForm, UpdateStatusForm, UpdateReservationStatusForm,UserUpdateReservationStatusForm
 from .forms import RegistrationUserForm
-from library.models import Booking, Complaints
+from library.models import Booking, Complaints,BookReservation
 
 # from users.utils import create_notification
 
@@ -159,10 +159,11 @@ def dashboard_user(request):
         "unread_count": unread_count,
     }
     return render(request, "dashboard_users.html", context)
+
 @login_required(login_url="signup")
 def list_reservation(request):
     username = request.user
-    bookings = Booking.objects.filter(username=request.user)
+    bookings = BookReservation.objects.filter(username=request.user)
 
     for booking in bookings:
         booking.save()
@@ -173,9 +174,10 @@ def list_reservation(request):
 
     context = {
         "page_title": "View Reservation",
-        "all_bookings": Booking.objects.filter(username=username),
-        "form": UserUpdateStatusForm,
+        "all_bookings": BookReservation.objects.filter(username=username),
+        # "forms": UserUpdateStatusForm,
         "unread_count": unread_count,
+        "form":UserUpdateReservationStatusForm()
     }
     return render(request, "view_reservation.html", context)
 

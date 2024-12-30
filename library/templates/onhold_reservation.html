@@ -14,13 +14,6 @@
             </ol>
         </nav>
     </div>
-    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-        {% if fine %}
-            <a href="{% url 'reserved_issued' %}">
-                <button class="btn btn-outline-success btn-sm me-4" type="submit">Reserved Book issue</button>
-            </a>
-        </div>
-    {% endif %}
     <div class="container mt-4">
         {% if all_bookings %}
             <table class="table table-striped table-bordered table-hover table-sm ">
@@ -57,14 +50,22 @@
                             </td>
                         </tr>
                         <!-- Modal for update booking -->
-                        {% comment %} <div class="modal fade" id="exampleModal{{ all_booking.id }}" tabindex="-1" aria-labelledby="exampleModalLabel{{ all_booking.id }}" aria-hidden="true">
+                        <div class="modal fade"
+                             id="exampleModal{{ all_booking.id }}"
+                             tabindex="-1"
+                             aria-labelledby="exampleModalLabel{{ all_booking.id }}"
+                             aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered">
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <h1 class="modal-title fs-5" id="exampleModalLabel{{ all_booking.id }}">Update</h1>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        <button type="button"
+                                                class="btn-close"
+                                                data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
                                     </div>
-                                    <form action="{% url 'update_booking' all_booking.id %}" method="post">
+                                    <form action="{% url 'status_update_reservation' all_booking.id %}"
+                                          method="post">
                                         {% csrf_token %}
                                         <div class="modal-body">{{ form.as_p }}</div>
                                         <div class="modal-footer">
@@ -73,7 +74,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </div> {% endcomment %}
+                        </div>
                         <!-- Modal for removing booking -->
                     {% endfor %}
                 </tbody>
