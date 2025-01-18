@@ -946,7 +946,7 @@ class ReturnStatusListView(LoginRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
         context["page_title"] = "Returned Users"
         context["form"] = UpdateStatusForm
-        context["all_booking"] = Booking.objects.filter(status="returned").all()
+        context["all_bookings"] = Booking.objects.filter(status="returned").all()
 
         context["unread_count"] = Notification.objects.filter(
             is_mark=False, username=self.request.user
